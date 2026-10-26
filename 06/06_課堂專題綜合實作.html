@@ -1,0 +1,460 @@
+<!doctype html><html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>06_課堂專題綜合實作｜Kaggle Give Me Some Credit</title><style>
+:root{--ink:#173451;--muted:#627890;--blue:#486bdd;--blueLite:#eef3ff;--teal:#008b80;--tealLite:#e6f8f4;--sun:#f2a156;--line:#dfe8f2;--paper:#f4f7fc;--font:'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif}
+*{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#dfe7f2;color:var(--ink);font-family:var(--font)} button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.3}
+#deck{position:absolute;left:0;top:0;height:720px;width:1280px;transform-origin:top left;background:radial-gradient(circle at 90% 7%,#e5efff 0,transparent 40%),var(--paper);overflow:hidden;box-shadow:0 22px 90px #233a6470;border-radius:2px}
+.slidehead{height:140px;padding:23px 44px 7px;display:flex;flex-direction:column;justify-content:space-between}
+.meta{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:850;letter-spacing:.25px}
+.avatar{height:41px;width:41px;flex:none;border-radius:13px;background:#e4eaff;box-shadow:inset 0 0 0 2px #d5ddfa;overflow:hidden}
+.subbrand{color:#627992;font-weight:650;font-size:14px;border-left:2px solid #cbd6e4;padding-left:14px}
+.chip{background:white;border:1px solid #dbe5f0;border-radius:25px;padding:9px 16px;font-size:15px;font-weight:800;color:var(--blue)}
+.titleline{display:flex;justify-content:space-between;align-items:flex-end;gap:18px}
+h1{font-size:30px;letter-spacing:-.6px;line-height:1.3;margin:0;font-weight:900;max-width:980px}
+.topicnum{font-size:14px;color:#7990a5;font-weight:700;white-space:nowrap;padding-bottom:5px}
+.content{height:481px;padding:0 44px 0;display:grid;grid-template-columns:748px 1fr;gap:17px}
+.mainpanel,.sidepanel{background:#fff;border:1px solid #e2eaf5;border-radius:21px;box-shadow:0 8px 30px #3b56810c;overflow:hidden}
+.mainpanel{display:flex;flex-direction:column}
+.panelhead{height:55px;padding:15px 24px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(90deg,#fbfdff,#f4f8ff);border-bottom:1px solid #edf2f8}
+.panellabel{color:#6884a0;font-weight:850;font-size:13px;letter-spacing:1px}
+.panelhint{font-size:13px;color:#8293a5;font-weight:700}
+#viz{height:330px;padding:14px 23px 6px;display:flex;flex-direction:column;justify-content:center;align-items:stretch;overflow:hidden}
+#controls{height:96px;padding:11px 22px 12px;border-top:1px solid #ebf0f7;background:#fafdff;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.ctrlbtn,.choicebtn,.quizchoice,.softbtn{border:1px solid #d2e1f1;background:#fff;color:#33516e;border-radius:12px;padding:9px 14px;font-size:15px;font-weight:780;transition:.12s}
+.ctrlbtn:hover,.choicebtn:hover,.quizchoice:hover{border-color:#7394da;background:#f2f6ff}.selected{background:#e4eeff!important;color:#315ac3!important;border-color:#7fa2ee!important}.primary{background:#4772e5;border-color:#4772e5;color:#fff}.primary:hover{background:#355ed6;color:#fff}
+.slidergroup{display:flex;align-items:center;gap:15px;width:95%;font-weight:800;color:#416380;font-size:15px}.slidergroup label{width:140px;white-space:nowrap}.slidergroup input{flex:1;min-width:80px;accent-color:#486bdd;cursor:pointer}.slidergroup output{width:100px;text-align:right;color:#315ac3;font-size:17px;white-space:nowrap}
+.sidepanel{padding:20px 23px;display:flex;flex-direction:column;gap:9px}
+.lead{font-size:19px;font-weight:850;line-height:1.55;color:#1a4063}
+.smallhead{font-size:13px;color:#177d87;letter-spacing:1.4px;font-weight:900;display:flex;align-items:center;gap:7px}
+.note{font-size:16px;line-height:1.65;color:#4e6680;margin:0;overflow-wrap:anywhere}
+.think{margin-top:auto;border-radius:13px;background:#eaf6f6;padding:12px 13px;color:#25676b;font-weight:700;font-size:15px;line-height:1.55;min-height:68px}
+.codewrap{flex-shrink:0;background:#1e1e28;color:#e5e7eb;border:1px solid #384357;border-radius:13px;max-height:205px;min-height:75px;overflow:hidden;box-shadow:0 7px 19px #1d2a4326}
+.codehead{height:29px;background:#282b38;border-bottom:1px solid #424859;display:flex;align-items:center;gap:7px;padding:0 12px;font-size:11px;font-weight:850;color:#aebdd1;letter-spacing:.7px}
+.codehead:before{content:'● ● ●';font-size:11px;letter-spacing:2px;color:#fa8f86;margin-right:8px}
+.codewrap pre{margin:0;padding:11px 14px 12px 10px;font-size:13.2px;line-height:1.53;font-family:Consolas,'Cascadia Code',Monaco,'Noto Sans Mono CJK TC',monospace;white-space:pre;overflow:auto;tab-size:4}
+.code-line{display:block;white-space:pre;min-height:20px}.line-no{color:#778294;display:inline-block;min-width:27px;text-align:right;margin-right:15px;user-select:none}
+.tok-key{color:#c792ea}.tok-str{color:#b9da91}.tok-num{color:#f6bb76}.tok-bool{color:#f29772}.tok-call{color:#82c9f0}.tok-var{color:#d5e3fc}.tok-module{color:#7ad8c4}.tok-op{color:#e6afba}
+.nest-grid{display:flex;align-items:center;justify-content:center;gap:13px}.nest-box{border:2px solid #9ab5ec;background:#f1f6ff;border-radius:15px;padding:16px 18px;min-width:192px;color:#375875;text-align:center;font-weight:800}.nest-box.inner{background:#e4f7f2;border-color:#64b9af}.nest-box .brace{font-size:25px;color:#365ccc;margin-bottom:8px}.nest-box.inner .brace{color:#098479}.syntax-hint{font-size:16px;font-weight:850;color:#647a91;margin-top:14px;text-align:center}
+.foot{height:99px;padding:15px 46px 22px;display:flex;align-items:center;justify-content:space-between;gap:19px}
+.progress{height:8px;display:flex;gap:5px;max-width:390px;flex:1}.pseg{height:8px;flex:1;border-radius:8px;background:#d1dce9}.pseg.done{background:#57aaa5}.pseg.now{background:#5478df}
+.nav{display:flex;align-items:center;gap:10px}.nav button{min-width:106px;border:1px solid #d2e0ee;background:#fff;border-radius:12px;padding:11px 17px;color:#31577a;font-weight:800;font-size:15px}.nav .next{background:#335dd6;color:#fff;border-color:#335dd6}
+.footerMeta{display:flex;flex-direction:column;gap:4px}.footnotice{font-size:13px;color:#7489a1;font-weight:650}
+.numlabel{font-size:15px;color:#607d99;font-weight:800}
+/* Shared visualization elements. */
+.minihint{font-size:15px;color:#657f99;font-weight:730;text-align:center;margin:2px 0 9px}.statbig{font-size:48px;font-weight:950;color:#315ed4;letter-spacing:-2px}.statlabel{font-weight:800;color:#58748d;font-size:16px}.statside{display:flex;gap:22px;justify-content:center;align-items:center}.equation{font-size:25px;font-weight:850;text-align:center;padding:12px;border-radius:13px;background:#eff5ff;color:#234c8a}.accent{color:#2665d1}.teal{color:#008b80}.dim{opacity:.32}.highlight{background:#e3efff!important;color:#285cca!important}.muted{color:#8ea2b7}
+.cards{display:flex;gap:13px;align-items:stretch;justify-content:center}.datacard{background:#f6f9ff;border:1.5px solid #dee7f5;border-radius:16px;padding:18px;min-width:118px;flex:1;text-align:center}.datacard.active{border-color:#85a7ec;background:#e7efff;box-shadow:0 9px 15px #6e8cce22}.datacard .num{font-size:30px;font-weight:900;margin:6px 0;color:#355ecb}.datacard .tag{font-weight:850;color:#456989}.datacard .desc{font-size:13px;color:#7590a7;line-height:1.4}
+.flowline{display:flex;gap:14px;align-items:center;justify-content:center}.flowcard{min-height:185px;border-radius:20px;border:2px solid #dbe8f5;background:#f7faff;padding:25px 16px;text-align:center;flex:1}.flowcard.on{border-color:#7394ec;background:#e7f0ff;box-shadow:0 12px 25px #4e78e022}.flowcard .icon{font-size:42px;font-weight:900;color:#4569c9}.flowcard .name{font-size:20px;font-weight:900;margin:10px 0}.flowcard .sm{font-size:15px;line-height:1.6;color:#677e93}.flowarrow{font-size:34px;font-weight:900;color:#9fb2cc;flex:none}.bluepill{display:inline-flex;background:#e4efff;color:#315bca;padding:7px 14px;border-radius:100px;font-size:17px;font-weight:850;margin:3px}
+.arrrow{display:flex;align-items:stretch;gap:10px;justify-content:center;margin:6px 0}.arraycell{width:69px;text-align:center;border:1.6px solid #cedced;background:#f4f8ff;border-radius:12px;padding:15px 0 12px;font-weight:900;font-size:25px;color:#385a7c;position:relative}.arraycell .ix{position:absolute;top:-23px;left:0;right:0;font-size:13px;color:#7790aa;font-weight:750}.arraycell.hot{background:#e4f6f4;border-color:#36aca1;color:#008f83}.arraycell.pick{background:#e7edff;border-color:#496fd6;color:#315dd5;box-shadow:0 4px 14px #3a70ce21}.arr-caption{font-size:18px;text-align:center;color:#416280;font-weight:800;line-height:1.5;margin-top:17px}
+.datatable{border-collapse:separate;border-spacing:0;width:100%;font-size:15px;overflow:hidden;border-radius:12px;border:1px solid #dce6f1;table-layout:fixed}.datatable th{background:#eaf1fc;color:#355780;padding:7px 6px;font-weight:850;border-bottom:1px solid #d6e2f0}.datatable td{padding:6px 8px;text-align:center;color:#45627d;border-bottom:1px solid #ebf0f6;font-weight:650}.datatable tr:last-child td{border-bottom:0}.datatable .warn{color:#cf794a;background:#fff4e8;font-weight:900}.datatable .focused{background:#e0f4f2;color:#087d72}.datatable .inactive-row{opacity:.28}.datatable .keycol{color:#285bc0;background:#edf3ff;font-weight:900}
+.matrix{display:grid;gap:10px;justify-content:center;grid-template-columns:repeat(4,78px);margin:6px}.matrix .mx{width:78px;height:63px;border-radius:12px;border:1.5px solid #cfdded;background:#f5f9ff;font-size:24px;font-weight:900;color:#375a77;display:flex;align-items:center;justify-content:center}.matrix button.mx:hover{border-color:#6285d7}.matrix .mx.pick{background:#dce9ff;color:#2758bc;border-color:#769ae1}.matrix .mx.rowpick{background:#e7f8f5;border-color:#8bc5ba}.matrix .mx.colpick{border:2px solid #f3ba82}
+.chartSvg{width:100%;height:290px;overflow:visible}.compact-chart .chartSvg{height:190px}.mask-layout .arr-caption{margin-top:0;font-size:16px}.compact-chart .arraycell .ix{top:3px;right:auto;left:8px;font-size:11px}.compact-table .datatable td{padding:4px 8px}.compact-table .datatable th{padding:5px 6px}.chartSvg text{font-family:var(--font)}.legend{font-size:13px;color:#647f98;text-align:center;font-weight:760}
+.resultline{font-size:19px;font-weight:850;color:#315bca;text-align:center;margin-top:13px}
+.quizquestion{background:#f1f6ff;border-radius:15px;padding:13px 16px;font-size:20px;font-weight:900;margin-bottom:14px;line-height:1.5}.quizopts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.quizchoice{text-align:left;min-height:60px;font-size:17px;line-height:1.45}.quizchoice.wrong{border-color:#eeac96;background:#fff6f1}.quizchoice.right{border-color:#54a99a;background:#e5f7f2}.quizstatus{min-height:53px;font-size:15px;font-weight:800;line-height:1.5;color:#526e86;padding-top:10px}.quizexplain{background:#e6f7f1;padding:14px;border-radius:14px;font-size:16px;line-height:1.65;color:#226c62;font-weight:760}.quizhint{background:#fff2e5;padding:14px;border-radius:14px;font-size:16px;line-height:1.65;color:#956128;font-weight:700}
+.overveil{position:absolute;inset:0;background:#0f2e4cc7;z-index:50;display:flex;justify-content:center;align-items:center;padding:60px}.overlay{background:#fff;border-radius:24px;padding:28px 34px;width:1050px;max-height:580px;overflow:auto}.overlay h2{margin:0 0 14px}.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.overview button{text-align:left;border:1px solid #dbe5f3;background:#f7faff;padding:9px 10px;border-radius:9px;font-size:13px;font-weight:750}.overview button:hover{background:#e6f0ff}.overview button.active{background:#dceaff;border-color:#8eabde}.helptext{font-size:20px;line-height:1.9}.closeoverlay{float:right;border:0;background:#e9f1fe;padding:7px 13px;border-radius:8px;color:#325abc;font-weight:800}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+#viz{padding:12px 20px 8px}
+.sidepanel{gap:8px;padding:19px 22px}
+.note{font-size:15.5px;line-height:1.55}
+.think{font-size:14.5px;line-height:1.5;min-height:59px;padding:10px 12px}
+.lead{font-size:18.5px;line-height:1.5}
+.panelhint{font-size:12px}
+.codewrap{max-height:193px}
+.codewrap pre{font-size:12.9px;line-height:1.5}
+.ctrlbtn{padding:8px 11px;font-size:14px}
+.slidergroup{width:91%}
+#controls:has(.slidergroup:nth-child(2)) .slidergroup{width:46%;gap:8px;font-size:13px}
+#controls:has(.slidergroup:nth-child(2)) .slidergroup label{width:77px}
+#controls:has(.slidergroup:nth-child(2)) .slidergroup output{width:57px;font-size:14px}
+.panellabel{font-size:13px}
+.viz-title{font-size:16px;color:#345b82;font-weight:850;text-align:center;margin-bottom:5px}
+.plot{width:100%;max-height:290px;height:285px;display:block}
+.plot text{font-family:var(--font)}
+.plot .gridline{stroke:#e8eef6;stroke-width:1}
+.plot .axis{stroke:#839ab5;stroke-width:1.7}
+.legendline{display:flex;justify-content:center;gap:23px;color:#547087;font-size:13px;font-weight:800;margin-top:1px}
+.legendline span::before{content:'';width:10px;height:10px;display:inline-block;margin-right:6px;border-radius:50%;background:var(--c);vertical-align:middle}
+.metricrow{display:flex;gap:11px;justify-content:space-evenly;width:100%;margin:7px 0}
+.metricbox{flex:1;padding:12px;border:1.5px solid #dce7f6;border-radius:15px;background:#f8fbff;text-align:center}
+.metricbox.on{border-color:#74a6d7;background:#e8f2ff}
+.metricbox .k{font-size:13px;color:#57758f;font-weight:800}
+.metricbox .v{font-size:30px;color:#2e5fc7;font-weight:900;letter-spacing:-.5px;margin:3px 0}
+.metricbox .d{font-size:12px;color:#6c879c;font-weight:680}
+.minortext{font-size:14px;color:#5a728b;font-weight:750;text-align:center;line-height:1.5;margin-top:7px}
+.strong{font-weight:900;color:#2266ce}
+.process{display:flex;gap:9px;justify-content:center;align-items:stretch}
+.process .stage{flex:1;border:2px solid #e0e9f5;border-radius:16px;background:#f9fbff;padding:19px 11px;text-align:center}
+.process .stage.on{background:#e5f0ff;border-color:#6f96e4}
+.process .big{font-size:27px;font-weight:900;color:#426bd4}
+.process .name{font-size:19px;font-weight:900;color:#284a70;margin:7px 0}
+.process .detail{font-size:13px;line-height:1.6;color:#72899d}
+.data-mini{border-collapse:collapse;width:100%;font-size:15px;border-radius:12px;overflow:hidden}
+.data-mini th{background:#e8f1ff;color:#365c83;padding:9px 6px}
+.data-mini td{padding:8px 5px;text-align:center;border-bottom:1px solid #e7edf7;color:#4c6883;font-weight:730}
+.data-mini tr:last-child td{border-bottom:0}
+.data-mini tr.tone{background:#eaf5ff}
+.data-mini td.on{background:#daeeff;color:#1e5da7;font-weight:900}
+.data-mini td.labelcol{background:#e8f8f3;color:#087d74;font-weight:900}
+.data-mini td.testcol{background:#fff2e6;color:#aa6932;font-weight:900}
+.indexdots{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin:17px 0 15px}
+.sampledot{border:1.5px solid #d6e3f2;border-radius:12px;background:#eaf2ff;text-align:center;padding:10px 4px;color:#315caa;font-weight:850}
+.sampledot.test{background:#fff0df;color:#a96f28;border-color:#eac18b}
+.sampledot.muted{opacity:.25}
+.sampledot .sm{font-size:11px;margin-top:6px;color:#667f97}
+.formula{font-size:25px;font-weight:900;text-align:center;color:#315dd1;background:#eaf2ff;border-radius:12px;padding:10px;margin-top:9px}
+.formula small{font-size:14px;color:#54728d}
+.barbox{display:grid;grid-template-columns:90px 1fr 63px;gap:9px;align-items:center;margin:10px 2px}
+.barbox .n{color:#496581;font-size:15px;font-weight:850;text-align:right}
+.barbox .track{height:27px;background:#eff3f8;border-radius:9px;overflow:hidden}
+.barbox .fill{height:100%;background:#5e83e5;border-radius:9px;transition:width .13s}
+.barbox .v{font-size:14px;font-weight:850;color:#2e557e}
+.sparkstats{text-align:center;font-weight:800;color:#2b5fba;font-size:18px;line-height:1.7}
+.status{padding:12px 13px;border-radius:12px;background:#e6f6f4;font-size:17px;font-weight:850;color:#136f6c;text-align:center;margin-top:10px}
+.wrapcodes .codewrap{margin-top:8px}
+.quizquestion{font-size:18px;padding:13px}
+.quizchoice{font-size:16px;min-height:65px}
+.quizstatus{margin-top:3px}
+@media(prefers-reduced-motion:reduce){.barbox .fill{transition:none}}
+.numstep{display:inline-flex;align-items:center;gap:8px;color:#466783;font-size:13px;font-weight:800}
+.numstep button{width:28px;height:27px;background:#eaf1ff;border:1px solid #a3b9ee;border-radius:8px;color:#365ed0;font-size:17px;font-weight:900;cursor:pointer}
+.numstep b{color:#305fc1;min-width:56px;text-align:center}
+
+.data-mini td{padding:5px 5px}
+.metricrow{margin:3px 0}
+.metricbox{padding:9px 8px}
+.metricbox .v{font-size:26px}
+.metricbox .k{font-size:12.5px}
+.indexdots{margin:11px 0}
+.sampledot{padding:8px 4px}
+#viz:has(.viz-title + .data-mini + .status) .data-mini td{padding:4px}
+#viz .status{margin-top:7px;padding:9px 11px;font-size:15px}
+#viz:has(.barbox) .barbox{margin:7px 2px}
+/* Third-week classification diagrams and controls. */
+.legendrow{display:flex;justify-content:center;gap:18px;align-items:center;font-size:14px;color:#506b86;font-weight:800;margin:3px 0 6px}
+.legenddot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.plot-title{font-weight:850;text-align:center;font-size:15px;color:#5b7690}
+.plotwrap{display:flex;flex-direction:column;align-items:stretch;justify-content:center;flex:1;min-height:0}
+.plotSvg{width:100%;height:282px;overflow:visible}
+.threecards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;width:100%}
+.metriccard{border:1.5px solid #d9e6f5;border-radius:15px;background:#f7faff;padding:14px 10px;text-align:center;min-width:0}
+.metriccard.active{border-color:#6992eb;background:#eaf1ff}
+.metriccard .value{font-weight:900;font-size:27px;color:#305dcc;margin:8px 0}
+.metriccard .tag{color:#56738e;font-size:15px;font-weight:850}
+.metriccard .small{color:#7290a8;font-size:12px;line-height:1.4}
+.rowstats{display:flex;align-items:stretch;gap:14px;justify-content:center;margin:12px 0}
+.rowstats .metriccard{flex:1}
+.cmwrap{display:flex;align-items:center;justify-content:center;gap:19px;width:100%;height:300px}
+.cmgrid{display:grid;grid-template-columns:100px repeat(3,102px);grid-template-rows:30px repeat(3,64px);gap:5px;align-items:stretch}
+.cmcorner,.cmhead,.cmrowhead{font-size:12px;font-weight:850;display:flex;align-items:center;justify-content:center;text-align:center;color:#53728d;line-height:1.25}
+.cmcell{border:1.5px solid #d6e3f1;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:950;color:#345578;background:#f5f9fe;cursor:pointer}
+.cmcell.good{background:#e7f7f3;border-color:#b4e3d9;color:#008777}.cmcell.bad{background:#fff3e7;border-color:#f6d3ac;color:#b66b22}
+.cmcell.selected{box-shadow:0 0 0 3px #7091e5!important}
+.cmnote{width:195px;font-size:14px;line-height:1.6;color:#56718b;font-weight:700}
+.cmnote strong{display:block;font-size:26px;color:#315ecb;margin:3px 0}
+.barrow{display:grid;grid-template-columns:150px 1fr 60px;align-items:center;gap:14px;margin:16px 0;font-size:15px;font-weight:850;color:#426580}
+.bartrack{height:23px;border-radius:7px;background:#edf2f8;overflow:hidden}.barfill{height:100%;border-radius:6px}
+.probtitle{font-size:16px;font-weight:850;text-align:center;margin-bottom:10px;color:#52738e}
+.probresult{background:#edf5ff;border:1px solid #d1e0f9;border-radius:13px;padding:13px 16px;text-align:center;color:#31558b;font-weight:800;font-size:18px;margin-top:12px}
+.flowsteps{display:flex;align-items:center;justify-content:center;gap:7px;width:100%}.flowsteps .step{flex:1;min-width:0;border-radius:15px;padding:16px 10px;text-align:center;background:#f1f7ff;border:2px solid #dbe6f4;color:#52708c}.flowsteps .step.active{background:#dfeaff;border-color:#6388e0;color:#294eae}.flowsteps .step .no{font-weight:950;font-size:25px}.flowsteps .step .name{font-weight:850;font-size:16px;margin:8px 0 3px}.flowsteps .arr{font-size:24px;color:#9eb1c5}
+.quizquestion{font-size:20px;line-height:1.5;font-weight:900;color:#233f61;text-align:center;margin-bottom:16px}
+.quizoptions{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.quizchoice{min-height:67px;padding:12px 14px;font-size:16px;font-weight:800;text-align:left;line-height:1.35}.quizchoice.correct{background:#ddf6e9;border-color:#48b795;color:#127b5e}.quizchoice.wrong{background:#fff0eb;border-color:#eeaa99;color:#ad513d}
+.quizindex{text-align:center;color:#6985a1;font-size:14px;font-weight:850;margin-top:9px}
+.quizexplain,.quizhint{border-radius:14px;background:#e7f7f2;padding:16px;color:#17785f;font-weight:750;line-height:1.65;font-size:16px}.quizhint{background:#fff5e8;color:#a46b2f}
+.mini-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #dce6f2;border-radius:12px;overflow:hidden;font-size:14px;table-layout:fixed}
+.mini-table th{background:#eaf1fc;color:#3d6185;padding:8px 5px;text-align:center;border-bottom:1px solid #dce6f2}
+.mini-table td{text-align:center;border-bottom:1px solid #e9f0f7;padding:7px 5px;color:#46647d;font-weight:750}
+.mini-table tr:last-child td{border-bottom:none}.mini-table .hit{background:#dff4ef;color:#007a6a}
+.simpleformula{font-size:28px;font-weight:900;text-align:center;color:#2f5cc3;background:#eef4ff;padding:15px;border-radius:13px;margin:13px 0}
+.treeviz{width:100%;height:286px}.tagbox{padding:11px 15px;background:#edf4ff;border:1px solid #d8e5f5;border-radius:13px;font-weight:800;color:#3d5f83;text-align:center;margin:4px}
+.cmpair{display:flex;gap:12px;width:100%;align-items:stretch}.cmpair .metriccard{flex:1;padding:19px 13px}
+.smallscatter{width:100%;height:172px}.chartsrow{display:flex;gap:7px;align-items:stretch;width:100%}.chartsrow>div{flex:1;min-width:0}
+.codewrap pre{font-size:12.7px;line-height:1.51;padding-right:7px}.codewrap{max-height:192px}
+.sidepanel{gap:8px}.think{min-height:62px}
+.pillrow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;margin:10px}
+.pill{background:#e9f1ff;border:1px solid #cfdef6;border-radius:50px;padding:8px 14px;font-size:16px;color:#3c5cb6;font-weight:850}
+.plottooltip{font-size:14px;font-weight:830;text-align:center;color:#506f8f;margin:4px}
+
+/* Prevent the last row, outcome card, and code from clipping. */
+.mini-table td{padding:5px 5px}.mini-table th{padding:6px 5px}
+.pillrow{margin:7px}.pill{padding:6px 11px}
+.plotSvg{height:272px}
+#viz:has(.probresult) .flowsteps .step{padding:6px 7px}
+#viz:has(.probresult) .flowsteps .step .no{font-size:21px}
+#viz:has(.probresult) .flowsteps .step .name{font-size:14px;margin:4px 0 0}
+#viz:has(.probresult) .barrow{margin:7px 0}
+#viz:has(.probresult) .probresult{padding:8px;margin-top:4px}
+
+/* LLM API visual teaching modules. */
+#viz{height:330px;padding:12px 16px 8px;justify-content:center}
+.vstack{height:100%;width:100%;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:10px;min-height:0}
+.vrow{display:flex;gap:9px;align-items:stretch;justify-content:center;min-width:0;width:100%}
+.vcard{background:#f5f9ff;border:1.5px solid #d9e5f3;border-radius:15px;padding:13px 10px;text-align:center;min-width:0;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:background .18s,border-color .18s}
+.vcard.active{border-color:#7199e2;background:#e7efff;box-shadow:0 8px 22px #6187d125}
+.vcard.risk.active{background:#fff0e9;border-color:#eab69c}
+.vlabel{color:#6687a3;font-size:12px;font-weight:850;letter-spacing:.7px}
+.vvalue{color:#315a84;font-size:19px;font-weight:950;line-height:1.25;overflow-wrap:anywhere}
+.vsmall{color:#66829b;font-size:12px;font-weight:700;line-height:1.35}
+.flowv .vcard{min-height:120px}
+.vizlabel{text-align:center;color:#567697;font-size:15px;font-weight:850;line-height:1.4}
+.vizlabel small{font-size:11px;color:#a06f4b;display:block;margin-top:4px}
+.mockwindow{border:1.5px solid #d8e5f4;border-radius:15px;overflow:hidden;background:#fff;width:100%;min-height:0;flex-shrink:0}
+.mocktop{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#eef3fb;border-bottom:1px solid #dce6f2;color:#5d7895;font-size:12px;font-weight:800;gap:6px}
+.mocktop strong{flex:1;text-align:center;color:#3a5c87}
+.mocktop .bulbs{font-size:11px;color:#e89d91;letter-spacing:2px}
+.mockbody{padding:14px 16px;display:flex;gap:6px;flex-direction:column;justify-content:center;min-height:55px}
+.mockline{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#687e92;font-size:14px;background:#f8fbff;border:1px solid #edf3fa;border-radius:9px;padding:9px 12px}
+.mockline strong{font-size:16px;color:#345b89;text-align:right;overflow-wrap:anywhere}
+.mockline.lineactive{background:#ebf4ff;border-color:#9cbbec}
+.biganswer{font-size:20px;line-height:1.55;font-weight:850;color:#345a80;text-align:center;min-height:32px}
+.biganswer.multiline{white-space:pre-line;text-align:left;padding-left:10px}
+.centerhint{font-size:13px;color:#627e9a;font-weight:750;text-align:center}
+.tokenstrip{display:flex;gap:10px;justify-content:center;margin:12px 0}
+.token{font-size:19px;font-weight:900;color:#b1bfcc;border:2px dashed #d8e3ed;background:#f7f9fc;border-radius:13px;padding:18px 14px}
+.token.revealed{color:#295dab;border:2px solid #6b9fe7;background:#e7efff}
+.token.curr{background:#cfe7ff;color:#2359ab}
+.caret{color:#2f77d2;animation:blink 1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+.prompttext{font-size:18px;line-height:1.55;font-weight:800;color:#3d6080;white-space:pre-line;overflow-wrap:anywhere}
+.hchip{padding:9px 11px;border:1.5px solid #dce6f4;border-radius:13px;background:#f5f9ff;font-size:14px;font-weight:850;color:#647d97;flex:1;text-align:center}
+.hchip.selected{background:#e8f3ff;color:#315fc2}
+.buildcols{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0;flex:1;max-height:288px}
+.conditionlist{display:flex;flex-direction:column;gap:7px;min-height:0}
+.cond{padding:9px 11px;border:1.5px solid #dfebf5;background:#f7faff;border-radius:11px;display:flex;flex-direction:column;gap:2px}
+.cond.active{border-color:#7fb7ab;background:#e8f7f3}
+.cond b{font-size:13px;color:#365c86}
+.cond small{font-size:11px;font-weight:650;color:#6a849a;line-height:1.3}
+.promptpreview{min-height:0;display:flex;flex-direction:column;background:#f0f7ff;border:1.5px solid #d9e7f7;border-radius:14px;padding:13px}
+.previewtitle{font-size:14px;font-weight:950;color:#2d6ca1;margin-bottom:8px}
+.previewbody{font-size:14px;line-height:1.45;font-weight:720;color:#41627d;flex:1;overflow:hidden}
+.previewbody p{margin:6px 0;border-top:1px dashed #d7e3f1}
+.previewfoot{font-size:12px;color:#537d9d;font-weight:800;text-align:right}
+.keymask{background:#252e42;color:#a8dbe5;font-family:Consolas,monospace;letter-spacing:3px;font-size:21px;border-radius:10px;text-align:center;padding:8px}
+.keyexplain{font-size:13px;font-weight:750;color:#617d95;text-align:center;line-height:1.4}
+.tag{display:inline-block;border-radius:9px;padding:6px 10px;font-size:13px;font-weight:950;text-align:center;width:max-content;align-self:center;max-width:100%}
+.tag.good{background:#e7f6ef;color:#107a5d;border:1px solid #a5dac7}
+.tag.bad{background:#fff1ed;color:#b85a45;border:1px solid #e3b6a7}
+.chatboard{display:flex;flex-direction:column;gap:8px;background:#f6f9ff;border:1px solid #e2eaf5;border-radius:17px;padding:12px;overflow:hidden;min-height:0}
+.bubble{max-width:85%;min-width:190px;padding:9px 12px;border:1.5px solid #dbe6f3;background:#fff;border-radius:14px;color:#58748f;font-size:15px;line-height:1.37;display:flex;flex-direction:column;gap:2px}
+.bubble b{font-size:12px;color:#65829b;font-weight:950}
+.bubble.user{align-self:flex-end;background:#edf2ff;border-color:#d4e1f4}
+.bubble.system{align-self:flex-start;background:#fff5e9;border-color:#f0d7ba}
+.bubble.model{align-self:flex-start;background:#e7f7f4;border-color:#bde2d8}
+.bubble.emph{border-color:#6294e8;box-shadow:0 0 0 2px #7fa5eb27;color:#285993}
+.chatboard.compact{gap:5px;padding:10px 15px}
+.chatboard.compact .bubble{max-width:91%;padding:5px 10px;gap:1px;font-size:13.3px;line-height:1.28}
+.chatboard.compact .bubble b{font-size:10.5px}
+.historyboard{display:flex;flex-direction:column;gap:6px}
+.histitem{display:flex;align-items:center;gap:12px;border:1.3px solid #dce7f4;border-radius:10px;padding:7px 12px;font-size:14px;color:#416380;background:#f4f9ff}
+.histitem b{font-size:12px;min-width:58px;color:#4d79a3}
+.histitem span:nth-child(2){flex:1;font-weight:750}
+.histitem.off{opacity:.42;background:#edf1f5}
+.histitem .tag{font-size:11px;padding:3px 8px;white-space:nowrap}
+.fieldtable{display:flex;flex-direction:column;gap:7px;background:#edf6ff;padding:11px;border:1px solid #dbe8f5;border-radius:13px}
+.fieldtable .mockline{background:white}
+.fieldtable .mockline strong{max-width:70%}
+.tokenbar{display:flex;width:100%;height:32px;overflow:hidden;border-radius:10px;background:#dae8f7}
+.tokenbar span{display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;white-space:nowrap}
+.tokenbar span:first-child{background:#80a8ed;color:#fff}.tokenbar span:last-child{background:#7bcac0;color:#184f58}
+.costline{text-align:center;font-size:36px;font-weight:950;color:#2463be}
+.costline small{font-size:14px;font-weight:800;color:#7b92a5}
+#controls{gap:7px;padding:9px 12px;align-content:center}
+#controls .choicebtn{font-size:14.2px;padding:9px 11px;min-height:38px;max-width:180px}
+#controls .resetbtn{border-color:#91cabb;color:#09766f;background:#f0fbf8}
+.sidepanel{gap:8px;padding:19px 21px}.lead{font-size:18px;line-height:1.46}.note{font-size:15px;line-height:1.55}.think{min-height:55px;font-size:14px;padding:10px 12px}
+.codewrap{max-height:196px}.codewrap pre{font-size:12.3px;line-height:1.43;padding:8px 6px 8px 7px}.line-no{margin-right:9px;min-width:18px}
+.quizframe{width:100%}.quizquestion{font-size:18px;margin:0 0 12px}.quizoptions{gap:9px}.quizchoice{min-height:57px;font-size:15px}
+.question-count{font-size:16px;font-weight:900;color:#66819e}
+@media(prefers-reduced-motion:reduce){.caret{animation:none}}
+
+.sidepanel.kind-practice,.sidepanel.kind-chat{padding:15px 19px;gap:6px}
+.sidepanel.kind-practice .lead,.sidepanel.kind-chat .lead{font-size:17px;line-height:1.38}
+.sidepanel.kind-practice .note,.sidepanel.kind-chat .note{font-size:14px;line-height:1.43}
+.sidepanel.kind-practice .think,.sidepanel.kind-chat .think{min-height:49px;font-size:13px;padding:9px 11px}
+
+#viz{height:330px;padding:10px 16px 7px;justify-content:center}
+#controls{gap:7px;padding:9px 12px;align-content:center}
+#controls .choicebtn{font-size:14px;min-height:37px;padding:8px 11px}
+.sidepanel{gap:7px;padding:18px 20px}.lead{font-size:17.5px;line-height:1.44}.note{font-size:14.8px;line-height:1.49}.think{font-size:13.5px;min-height:52px;padding:9px 11px}
+.codewrap{max-height:192px}.codewrap pre{font-size:12.3px;line-height:1.42;padding:8px 8px}.line-no{margin-right:7px;min-width:19px}
+.vstack{gap:8px}.vcard{padding:11px 8px}.vlabel{font-size:11px}.vvalue{font-size:19px}.vsmall{font-size:11.5px}
+.weekcards .vcard{padding:11px 6px;min-height:106px}.weekcards .vvalue{font-size:14px}.weekcards .vsmall{font-size:10.5px}
+.viz-title6{font-weight:850;font-size:15px;text-align:center;color:#527594}
+.plot6{height:251px;width:100%;display:block}.legend6{text-align:center;display:flex;justify-content:center;gap:24px;color:#617b96;font-size:12px;font-weight:800}.legend6 span:first-child{color:#4c82d3}.legend6 span:last-child{color:#df924c}
+.tbl6{border-collapse:separate;border-spacing:0;table-layout:fixed;width:100%;font-size:14px;border:1px solid #d8e3f2;border-radius:11px;overflow:hidden}
+.tbl6 th{background:#eaf1fc;color:#315b86;padding:7px 3px;font-weight:900}.tbl6 td{text-align:center;color:#496783;font-weight:780;padding:7px 3px;border-bottom:1px solid #ebf0f6}.tbl6 tr:last-child td{border-bottom:0}.tbl6 td.focus{background:#def7ef;color:#0a8066}.tbl6 em{font-style:normal;background:#fff0e3;color:#c3692c;border-radius:7px;padding:3px 8px}
+.centerhint6{font-size:12px;line-height:1.4;text-align:center;font-weight:730;color:#607c96}
+.barlist{width:100%;display:flex;flex-direction:column;gap:6px;min-height:0}.baritem{display:grid;grid-template-columns:70px 1fr 46px;align-items:center;gap:10px;height:18px;color:#56768e;font-size:12px;font-weight:800}
+.baritem>span{text-align:right}.bartrack{height:15px;background:#edf3fa;border-radius:8px;overflow:hidden}.barfill{height:100%;border-radius:8px}.baritem b{text-align:left;color:#3b6689}
+.samplegrid6{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}.samplebox6{border-radius:9px;text-align:center;font-size:14px;font-weight:850;padding:8px;background:#e8efff;color:#3e65bd;border:1px solid #cbd9fa}.samplebox6.te{background:#fff0e2;border-color:#ebcfac;color:#ad7037}.samplebox6.mute{opacity:.15}
+.predgrid6{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;width:100%}.preditem6{border-radius:10px;border:1px solid #b9d9cc;background:#e5f6ee;padding:6px;display:flex;gap:2px;align-items:center;justify-content:center;font-size:12px;color:#397365;font-weight:850;flex-direction:column}.preditem6.no{background:#fff1e8;border-color:#e9c5af;color:#ba6748}.preditem6 small{font-size:10px}
+.residual6{margin:9px 0;padding:12px;background:#f2f6fc;border:1px solid #dbe4f4;border-radius:13px;color:#46708a;font-weight:800;font-size:15px}.resbar6{margin-top:9px;height:35px;position:relative;border-radius:9px;overflow:hidden;background:#fff;border:1px solid #d6e5f4;display:flex;align-items:center}.resbar6 span{height:100%;background:#b4d9db}.resbar6 b{position:absolute;left:11px;color:#225a67;font-size:13px}
+.sliderdual6{display:flex;gap:20px;align-items:center;width:100%;justify-content:space-around}.sliderdual6 label{font-size:14px;font-weight:800;color:#426486;display:flex;gap:8px;align-items:center}.sliderdual6 input{width:165px;accent-color:#536fdb}.sliderdual6 b{font-size:14px;color:#2d60c6;min-width:45px}
+.number6{color:#137f79}.matrixlayout6{display:flex;justify-content:center;align-items:center;gap:18px}.matrix6{display:grid;grid-template-columns:115px 135px 135px;grid-template-rows:39px repeat(2,80px);gap:7px;align-items:stretch}.matrix6 span{display:flex;align-items:center;justify-content:center;color:#56728d;font-weight:850;font-size:13px;text-align:center}.matrix6 button{border:1.5px solid #abcce2;border-radius:13px;background:#e9f6f2;color:#207468;font-size:28px;font-weight:950}.matrix6 button:nth-child(5),.matrix6 button:nth-child(7){background:#fff1e6;color:#b47235;border-color:#e4d1b9}.matrix6 button.active{outline:3px solid #3677dd;outline-offset:1px}.matrixstats6{min-width:148px;display:flex;flex-direction:column;gap:6px;color:#52708b;font-size:17px;font-weight:900}.matrixstats6>div{padding:5px 9px;border-radius:7px;background:#f2f6ff}.matrixstats6>div.active{background:#d9e9ff;color:#315bc5}
+.imgcompare6{display:grid;grid-template-columns:420px 1fr;gap:12px;align-items:center;min-height:0}.poster6{width:420px;max-height:281px;object-fit:contain;border-radius:12px;border:1px solid #d6e4f4}.imgcompare6 .vrow{flex-direction:column}.caption6{font-size:13px;font-weight:750;color:#66809b;line-height:1.45;margin-top:9px}
+.reporttext6{font-size:20px;line-height:1.56;color:#365a7e;font-weight:790}.reportgrid6{display:grid;grid-template-columns:1fr;gap:6px}.reportgrid6>div{display:flex;gap:10px;align-items:center;padding:6px 13px;background:#f3f8ff;border:1px solid #e2eaf4;border-radius:10px;color:#54718a;font-size:13px;line-height:1.35}.reportgrid6>div.on{background:#e6f5ef;border-color:#80c6b1;color:#1d6b62}.reportgrid6 b{min-width:45px;font-size:14px}.reportgrid6 span{font-weight:700}
+.kind-photo .codewrap,.kind-hsv .codewrap{max-height:154px}
+.kind-photo .lead,.kind-hsv .lead{font-size:17px;line-height:1.35}
+.kind-photo .note,.kind-hsv .note{font-size:14px;line-height:1.35}
+.kind-photo .think,.kind-hsv .think{min-height:49px;font-size:12.6px}
+.kind-start2 .codewrap{max-height:202px}
+.quizframe .quizquestion{font-size:18px}.quizframe .quizchoice{font-size:15px;min-height:57px}
+@media(prefers-reduced-motion:reduce){.barfill{transition:none}}
+
+/* Keep long code identifiers and compact metrics visible on the projection canvas. */
+.codewrap pre{font-size:11.35px;letter-spacing:-.12px}
+.vstack{gap:6px}
+.vstack:has(.barlist){gap:3px}
+.vstack:has(.barlist) .baritem{height:13px}
+.vstack:has(.barlist) .barlist{gap:3px}
+.vstack:has(.barlist) .bartrack{height:12px}
+.vstack:has(.barlist) .vcard{padding:6px 8px}
+.vstack:has(.barlist) .vvalue{font-size:17px}
+.vstack:has(.barlist) .status{padding:8px 10px;font-size:13px}
+.matrix6 button[data-cm="1"],.matrix6 button[data-cm="2"]{background:#fff1e6;color:#b47235;border-color:#e4d1b9}
+.matrix6 button[data-cm="0"],.matrix6 button[data-cm="3"]{background:#e9f6f2;color:#207468;border-color:#b9ddd2}
+.weekcards .vcard .vvalue{font-size:13.6px;word-break:keep-all}
+
+#viz .mockline{padding:7px 11px}
+#viz .mockbody{padding:11px 14px}
+
+/* Kaggle student project additions */
+#viz{padding:12px 18px 8px;justify-content:center}.sidepanel{padding:16px 19px;gap:6px}.lead{font-size:17px;line-height:1.4}.note{font-size:14.5px;line-height:1.47}.think{min-height:50px;font-size:13px;line-height:1.45;padding:8px 10px}.codewrap{max-height:215px;min-height:60px}.codewrap pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-size:11.6px;line-height:1.39;padding:8px 6px}.code-line{white-space:pre-wrap;min-height:17px}.line-no{min-width:20px;margin-right:7px}#controls{gap:7px;padding:8px 12px;align-content:center}.choicebtn{min-height:36px;padding:7px 10px;font-size:13.5px}.quizquestion{font-size:18px;line-height:1.4}.quizchoice{font-size:14.5px;min-height:56px}.vstack{height:100%;width:100%;display:flex;flex-direction:column;justify-content:center;gap:10px}.vrow{display:flex;gap:9px;align-items:stretch;justify-content:center;width:100%}.vcard{flex:1;min-width:0;border:1.5px solid #d8e5f2;background:#f7fbff;border-radius:13px;padding:12px 7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}.vcard.active{background:#e4efff;border-color:#6e99e2}.vcard.good{background:#e7f7f2;border-color:#91ccbd}.vcard.bad{background:#fff3eb;border-color:#ebbc9f}.vcard b{font-size:18px;color:#315d97;line-height:1.25}.vcard small{font-size:12px;line-height:1.4;color:#6c829a}.vizlabel{color:#526f8d;text-align:center;font-size:15px;font-weight:850;line-height:1.5}.banner{background:#eaf2ff;border:1px solid #cdddff;border-radius:14px;padding:14px;color:#2859a5;font-size:17px;font-weight:850;line-height:1.55;text-align:center}.banner.green{background:#e7f7f0;color:#10715e;border-color:#b5ddd0}.banner.warn{background:#fff5e7;color:#a5672d;border-color:#ead4b6}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}.smalltable{width:100%;border-collapse:collapse;font-size:14px;table-layout:fixed;border:1px solid #dbe7f4;border-radius:10px;overflow:hidden}.smalltable th{background:#e8f0ff;padding:8px;color:#3e608a}.smalltable td{padding:8px 6px;border-bottom:1px solid #e9eff7;color:#4a6b8b;text-align:center;overflow-wrap:anywhere;font-weight:730}.smalltable tr:last-child td{border-bottom:0}.hi{background:#dff5ee!important;color:#087565!important}.bigscore{font-size:47px;font-weight:900;color:#265cbf;text-align:center}.scorelabel{font-size:13px;color:#607f9d;font-weight:800;text-align:center}.barrowx{display:grid;grid-template-columns:152px 1fr 80px;gap:9px;align-items:center;font-size:14px;font-weight:790;color:#56728e;margin:9px 0}.bartrackx{height:23px;border-radius:9px;background:#e8eef6;overflow:hidden}.barfillx{display:block;height:100%;border-radius:8px;background:#5882e2}.barfillx.coral{background:#ed9c6d}.barfillx.teal{background:#4fae9e}.flowarr{color:#9bb2c9;font-size:27px;font-weight:900;align-self:center}.plot-svg{width:100%;height:255px;display:block}.plot-svg text{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;font-weight:750}.metagrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{border:1.5px solid #d7e3f4;background:#f7faff;border-radius:13px;padding:14px 9px;text-align:center}.metric .val{font-size:30px;font-weight:950;color:#2f61c4;margin:6px 0}.metric .key{font-size:13px;font-weight:800;color:#597790}.metric .small{font-size:11px;color:#7290a8}.longcode{background:#1f2839;color:#cce5ff;padding:13px 18px;border-radius:11px;font-size:16px;font-family:Consolas,monospace;line-height:1.6;white-space:pre-line}.choicepoints{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.tag{font-size:14px;color:#2e618e;background:#e7f0ff;border:1px solid #c9daf7;border-radius:30px;padding:8px 12px;font-weight:850}.liveinput{border:2px solid #8caeeb;border-radius:10px;font-size:21px;padding:8px;width:150px;color:#285dbc;font-weight:900;text-align:center;background:#fff}.livetxt{font-size:14px;color:#58758e;line-height:1.65;text-align:center;font-weight:770}.subbtn{border:1px solid #80aaa5;background:#e7f6ef;color:#197368;border-radius:10px;padding:8px 12px;font-weight:850;cursor:pointer;font-size:13px}.subbtn:hover{background:#cef0e5}.indicators{display:flex;gap:8px;justify-content:center}.indicators span{border-radius:25px;background:#eaf2fb;color:#627f9b;padding:6px 11px;font-size:12px;font-weight:820}.indicators span.on{background:#ddecff;color:#225dc0}.quizframe{width:100%}.quizoptions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.quizindex{text-align:center;font-size:13px;font-weight:900;color:#66819e;margin-top:7px}.question-count{font-weight:900;color:#66819e}.quizexplain,.quizhint{font-size:14.5px;line-height:1.5;padding:12px}.csvpreview{font:800 16px Consolas,monospace;color:#3265a8;background:#edf4ff;border:1px solid #d7e5fa;border-radius:11px;padding:12px;white-space:pre;text-align:center}.support-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.support-links a{font-size:14px;font-weight:850;padding:8px 10px;color:#2459b4;background:#e9f1ff;border-radius:8px;text-decoration:none;border:1px solid #ccdffb}.support-links a:hover{background:#dceaff}.histchart{display:flex;align-items:end;gap:4px;height:160px;justify-content:center;border-bottom:2px solid #899eb6;padding:0 20px}.histbar{width:18px;background:#7ca7e8;border-radius:5px 5px 0 0}.footnote{font-size:12px;font-weight:790;color:#8296a8;text-align:center}.codehead{font-size:10px}.sidepanel .smallhead{font-size:12px}.only-score{flex:1}.smallhint{font-weight:760;color:#64809b;font-size:13px;text-align:center;line-height:1.5}
+
+/* Kaggle student project additions */
+#viz{padding:12px 18px 8px;justify-content:center}.sidepanel{padding:16px 19px;gap:6px}.lead{font-size:17px;line-height:1.4}.note{font-size:14.5px;line-height:1.47}.think{min-height:50px;font-size:13px;line-height:1.45;padding:8px 10px}.codewrap{max-height:215px;min-height:60px}.codewrap pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-size:11.6px;line-height:1.39;padding:8px 6px}.code-line{white-space:pre-wrap;min-height:17px}.line-no{min-width:20px;margin-right:7px}#controls{gap:7px;padding:8px 12px;align-content:center}.choicebtn{min-height:36px;padding:7px 10px;font-size:13.5px}.quizquestion{font-size:18px;line-height:1.4}.quizchoice{font-size:14.5px;min-height:56px}.vstack{height:100%;width:100%;display:flex;flex-direction:column;justify-content:center;gap:10px}.vrow{display:flex;gap:9px;align-items:stretch;justify-content:center;width:100%}.vcard{flex:1;min-width:0;border:1.5px solid #d8e5f2;background:#f7fbff;border-radius:13px;padding:12px 7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}.vcard.active{background:#e4efff;border-color:#6e99e2}.vcard.good{background:#e7f7f2;border-color:#91ccbd}.vcard.bad{background:#fff3eb;border-color:#ebbc9f}.vcard b{font-size:18px;color:#315d97;line-height:1.25}.vcard small{font-size:12px;line-height:1.4;color:#6c829a}.vizlabel{color:#526f8d;text-align:center;font-size:15px;font-weight:850;line-height:1.5}.banner{background:#eaf2ff;border:1px solid #cdddff;border-radius:14px;padding:14px;color:#2859a5;font-size:17px;font-weight:850;line-height:1.55;text-align:center}.banner.green{background:#e7f7f0;color:#10715e;border-color:#b5ddd0}.banner.warn{background:#fff5e7;color:#a5672d;border-color:#ead4b6}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}.smalltable{width:100%;border-collapse:collapse;font-size:14px;table-layout:fixed;border:1px solid #dbe7f4;border-radius:10px;overflow:hidden}.smalltable th{background:#e8f0ff;padding:8px;color:#3e608a}.smalltable td{padding:8px 6px;border-bottom:1px solid #e9eff7;color:#4a6b8b;text-align:center;overflow-wrap:anywhere;font-weight:730}.smalltable tr:last-child td{border-bottom:0}.hi{background:#dff5ee!important;color:#087565!important}.bigscore{font-size:47px;font-weight:900;color:#265cbf;text-align:center}.scorelabel{font-size:13px;color:#607f9d;font-weight:800;text-align:center}.barrowx{display:grid;grid-template-columns:152px 1fr 80px;gap:9px;align-items:center;font-size:14px;font-weight:790;color:#56728e;margin:9px 0}.bartrackx{height:23px;border-radius:9px;background:#e8eef6;overflow:hidden}.barfillx{display:block;height:100%;border-radius:8px;background:#5882e2}.barfillx.coral{background:#ed9c6d}.barfillx.teal{background:#4fae9e}.flowarr{color:#9bb2c9;font-size:27px;font-weight:900;align-self:center}.plot-svg{width:100%;height:255px;display:block}.plot-svg text{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;font-weight:750}.metagrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{border:1.5px solid #d7e3f4;background:#f7faff;border-radius:13px;padding:14px 9px;text-align:center}.metric .val{font-size:30px;font-weight:950;color:#2f61c4;margin:6px 0}.metric .key{font-size:13px;font-weight:800;color:#597790}.metric .small{font-size:11px;color:#7290a8}.longcode{background:#1f2839;color:#cce5ff;padding:13px 18px;border-radius:11px;font-size:16px;font-family:Consolas,monospace;line-height:1.6;white-space:pre-line}.choicepoints{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.tag{font-size:14px;color:#2e618e;background:#e7f0ff;border:1px solid #c9daf7;border-radius:30px;padding:8px 12px;font-weight:850}.liveinput{border:2px solid #8caeeb;border-radius:10px;font-size:21px;padding:8px;width:150px;color:#285dbc;font-weight:900;text-align:center;background:#fff}.livetxt{font-size:14px;color:#58758e;line-height:1.65;text-align:center;font-weight:770}.subbtn{border:1px solid #80aaa5;background:#e7f6ef;color:#197368;border-radius:10px;padding:8px 12px;font-weight:850;cursor:pointer;font-size:13px}.subbtn:hover{background:#cef0e5}.indicators{display:flex;gap:8px;justify-content:center}.indicators span{border-radius:25px;background:#eaf2fb;color:#627f9b;padding:6px 11px;font-size:12px;font-weight:820}.indicators span.on{background:#ddecff;color:#225dc0}.quizframe{width:100%}.quizoptions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.quizindex{text-align:center;font-size:13px;font-weight:900;color:#66819e;margin-top:7px}.question-count{font-weight:900;color:#66819e}.quizexplain,.quizhint{font-size:14.5px;line-height:1.5;padding:12px}.csvpreview{font:800 16px Consolas,monospace;color:#3265a8;background:#edf4ff;border:1px solid #d7e5fa;border-radius:11px;padding:12px;white-space:pre;text-align:center}.support-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.support-links a{font-size:14px;font-weight:850;padding:8px 10px;color:#2459b4;background:#e9f1ff;border-radius:8px;text-decoration:none;border:1px solid #ccdffb}.support-links a:hover{background:#dceaff}.histchart{display:flex;align-items:end;gap:4px;height:160px;justify-content:center;border-bottom:2px solid #899eb6;padding:0 20px}.histbar{width:18px;background:#7ca7e8;border-radius:5px 5px 0 0}.footnote{font-size:12px;font-weight:790;color:#8296a8;text-align:center}.codehead{font-size:10px}.sidepanel .smallhead{font-size:12px}.only-score{flex:1}.smallhint{font-weight:760;color:#64809b;font-size:13px;text-align:center;line-height:1.5}
+
+/* Kaggle student project additions */
+#viz{padding:12px 18px 8px;justify-content:center}.sidepanel{padding:16px 19px;gap:6px}.lead{font-size:17px;line-height:1.4}.note{font-size:14.5px;line-height:1.47}.think{min-height:50px;font-size:13px;line-height:1.45;padding:8px 10px}.codewrap{max-height:215px;min-height:60px}.codewrap pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-size:11.6px;line-height:1.39;padding:8px 6px}.code-line{white-space:pre-wrap;min-height:17px}.line-no{min-width:20px;margin-right:7px}#controls{gap:7px;padding:8px 12px;align-content:center}.choicebtn{min-height:36px;padding:7px 10px;font-size:13.5px}.quizquestion{font-size:18px;line-height:1.4}.quizchoice{font-size:14.5px;min-height:56px}.vstack{height:100%;width:100%;display:flex;flex-direction:column;justify-content:center;gap:10px}.vrow{display:flex;gap:9px;align-items:stretch;justify-content:center;width:100%}.vcard{flex:1;min-width:0;border:1.5px solid #d8e5f2;background:#f7fbff;border-radius:13px;padding:12px 7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}.vcard.active{background:#e4efff;border-color:#6e99e2}.vcard.good{background:#e7f7f2;border-color:#91ccbd}.vcard.bad{background:#fff3eb;border-color:#ebbc9f}.vcard b{font-size:18px;color:#315d97;line-height:1.25}.vcard small{font-size:12px;line-height:1.4;color:#6c829a}.vizlabel{color:#526f8d;text-align:center;font-size:15px;font-weight:850;line-height:1.5}.banner{background:#eaf2ff;border:1px solid #cdddff;border-radius:14px;padding:14px;color:#2859a5;font-size:17px;font-weight:850;line-height:1.55;text-align:center}.banner.green{background:#e7f7f0;color:#10715e;border-color:#b5ddd0}.banner.warn{background:#fff5e7;color:#a5672d;border-color:#ead4b6}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}.smalltable{width:100%;border-collapse:collapse;font-size:14px;table-layout:fixed;border:1px solid #dbe7f4;border-radius:10px;overflow:hidden}.smalltable th{background:#e8f0ff;padding:8px;color:#3e608a}.smalltable td{padding:8px 6px;border-bottom:1px solid #e9eff7;color:#4a6b8b;text-align:center;overflow-wrap:anywhere;font-weight:730}.smalltable tr:last-child td{border-bottom:0}.hi{background:#dff5ee!important;color:#087565!important}.bigscore{font-size:47px;font-weight:900;color:#265cbf;text-align:center}.scorelabel{font-size:13px;color:#607f9d;font-weight:800;text-align:center}.barrowx{display:grid;grid-template-columns:152px 1fr 80px;gap:9px;align-items:center;font-size:14px;font-weight:790;color:#56728e;margin:9px 0}.bartrackx{height:23px;border-radius:9px;background:#e8eef6;overflow:hidden}.barfillx{display:block;height:100%;border-radius:8px;background:#5882e2}.barfillx.coral{background:#ed9c6d}.barfillx.teal{background:#4fae9e}.flowarr{color:#9bb2c9;font-size:27px;font-weight:900;align-self:center}.plot-svg{width:100%;height:255px;display:block}.plot-svg text{font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif;font-weight:750}.metagrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.metric{border:1.5px solid #d7e3f4;background:#f7faff;border-radius:13px;padding:14px 9px;text-align:center}.metric .val{font-size:30px;font-weight:950;color:#2f61c4;margin:6px 0}.metric .key{font-size:13px;font-weight:800;color:#597790}.metric .small{font-size:11px;color:#7290a8}.longcode{background:#1f2839;color:#cce5ff;padding:13px 18px;border-radius:11px;font-size:16px;font-family:Consolas,monospace;line-height:1.6;white-space:pre-line}.choicepoints{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}.tag{font-size:14px;color:#2e618e;background:#e7f0ff;border:1px solid #c9daf7;border-radius:30px;padding:8px 12px;font-weight:850}.liveinput{border:2px solid #8caeeb;border-radius:10px;font-size:21px;padding:8px;width:150px;color:#285dbc;font-weight:900;text-align:center;background:#fff}.livetxt{font-size:14px;color:#58758e;line-height:1.65;text-align:center;font-weight:770}.subbtn{border:1px solid #80aaa5;background:#e7f6ef;color:#197368;border-radius:10px;padding:8px 12px;font-weight:850;cursor:pointer;font-size:13px}.subbtn:hover{background:#cef0e5}.indicators{display:flex;gap:8px;justify-content:center}.indicators span{border-radius:25px;background:#eaf2fb;color:#627f9b;padding:6px 11px;font-size:12px;font-weight:820}.indicators span.on{background:#ddecff;color:#225dc0}.quizframe{width:100%}.quizoptions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.quizindex{text-align:center;font-size:13px;font-weight:900;color:#66819e;margin-top:7px}.question-count{font-weight:900;color:#66819e}.quizexplain,.quizhint{font-size:14.5px;line-height:1.5;padding:12px}.csvpreview{font:800 16px Consolas,monospace;color:#3265a8;background:#edf4ff;border:1px solid #d7e5fa;border-radius:11px;padding:12px;white-space:pre;text-align:center}.support-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.support-links a{font-size:14px;font-weight:850;padding:8px 10px;color:#2459b4;background:#e9f1ff;border-radius:8px;text-decoration:none;border:1px solid #ccdffb}.support-links a:hover{background:#dceaff}.histchart{display:flex;align-items:end;gap:4px;height:160px;justify-content:center;border-bottom:2px solid #899eb6;padding:0 20px}.histbar{width:18px;background:#7ca7e8;border-radius:5px 5px 0 0}.footnote{font-size:12px;font-weight:790;color:#8296a8;text-align:center}.codehead{font-size:10px}.sidepanel .smallhead{font-size:12px}.only-score{flex:1}.smallhint{font-weight:760;color:#64809b;font-size:13px;text-align:center;line-height:1.5}
+
+#viz .vstack{gap:7px}
+</style></head><body><div id="deck" role="application" aria-label="Kaggle Give Me Some Credit 課堂專題互動式投影片"></div><script>const slides=[{"section":1,"kind":"cover","title":"這一次，我們真的要提交 Kaggle 競賽","lead":"課堂任務：用借款人的匿名紀錄，預測「未來兩年內發生嚴重逾期」的風險機率，產生 CSV 並嘗試上傳。","observe":"點選三個階段，看看本週要完成什麼。","think":"目標不是猜對某個人的命運，而是學會可驗證的資料科學流程。","code":"","opts":["資料與問題","訓練與預測","上傳與改善"],"questions":[]},{"section":1,"kind":"history","title":"2011 年競賽結束了，為什麼還能做？","lead":"Give Me Some Credit 於 2011 年結束；Kaggle 現在標示 Late Submission。但高一學生若未滿 18 歲，必須先確認該賽事允許未成年人及所需的家長同意程序。","observe":"切換「歷史賽事、現在練習、注意事項」。","think":"未符合 Kaggle 年齡／賽事資格者，不要建立虛假年齡或共用帳號；改由老師示範、學生本地驗證。","code":"","opts":["2011 正式賽事","2026 課堂練習","登入後確認"],"questions":[]},{"section":1,"kind":"target","title":"這個模型要預測的是「風險機率」","lead":"目標欄位 SeriousDlqin2yrs：1 表示兩年內發生過嚴重逾期；0 表示沒有。上傳需提供每一筆的預測機率。","observe":"在類別 0／1 與預測機率之間切換。","think":"模型的預測分數不能用來直接核准或拒絕真實個人的貸款。","code":"","opts":["標籤 0","標籤 1","機率 0.8"],"questions":[]},{"section":1,"kind":"files","title":"先認識 Kaggle 提供的四個檔案","lead":"從競賽 Data 頁下載 cs-training.csv、cs-test.csv、sampleEntry.csv、Data Dictionary.xls。必須登入並遵守競賽資料使用規則。","observe":"選擇檔案，理解它的用途與能否看到答案。","think":"測試資料的真實標籤不是交給學生讀取的；由 Kaggle 負責評分。","code":"","opts":["cs-training.csv","cs-test.csv","sampleEntry.csv","Data Dictionary.xls"],"questions":[]},{"section":1,"kind":"datasize","title":"150,000 筆訓練，101,503 筆待預測","lead":"這份公開競賽資料的訓練資料約 15 萬筆，測試資料 101,503 筆，每筆使用 10 項特徵；不需要手動輸入資料。","observe":"切換訓練集／測試集，對照「有無標籤」。","think":"上傳時應輸出 101,503 列預測，不能只上傳驗證集的預測。","code":"train = pd.read_csv(\"cs-training.csv\")\ntest = pd.read_csv(\"cs-test.csv\")\nprint(train.shape, test.shape)","opts":["訓練資料","待預測資料"],"questions":[]},{"section":1,"kind":"features","title":"哪些欄位是 X？哪個欄位是 y？","lead":"age、MonthlyIncome、DebtRatio、過去逾期次數等屬於特徵 X；SeriousDlqin2yrs 是訓練時已知的答案 y。","observe":"切換特徵與標籤；注意原始索引欄不是模型特徵。","think":"不能把 y 或索引欄位當成預測線索，否則模型可能看見答案或無意義的編號。","code":"target = \"SeriousDlqin2yrs\"\nX = train.drop(columns=[\"Unnamed: 0\", target])\ny = train[target]\nprint(X.columns.tolist())","opts":["特徵 X","真實標籤 y","資料列編號"],"questions":[]},{"section":1,"kind":"missing","title":"資料清理：缺失值不是「補 0」就好","lead":"MonthlyIncome、NumberOfDependents 等欄位可能有缺失值；一種簡單做法是使用訓練資料的中位數補值。","observe":"選擇「原始、補 0、補中位數」，觀察示意數值。","think":"正式做法應只從訓練資料學習補值規則，再將同一規則用在驗證或測試資料。","code":"from sklearn.impute import SimpleImputer\nimputer = SimpleImputer(strategy=\"median\")\nX_ready = imputer.fit_transform(X)","opts":["原始缺失","直接補 0","中位數補值"],"questions":[]},{"section":1,"kind":"imbalance","title":"只看 Accuracy，可能被 93% 騙了","lead":"訓練資料約 6.7% 為正類。假如模型全部預測為「沒發生」，Accuracy 仍可能非常高，但完全抓不到正類。","observe":"切換 Accuracy 與 ROC-AUC 的評估角度。","think":"這個競賽採用 ROC-AUC 評估機率排序，不是只看 0／1 分類結果。","code":"","opts":["只猜 0 的模型","ROC-AUC 評估"],"questions":[]},{"section":1,"kind":"eda","title":"資料探索：先畫圖，再決定如何預測","lead":"使用 Pandas 讀 CSV、Matplotlib 畫直方圖或長條圖；先了解年齡分布、標籤比例及缺失狀況。","observe":"切換 Age 直方圖、目標類別比例及缺失值概念圖。Age 圖是教學模擬。","think":"知道某一類占很少時，會如何影響模型的評估方法？","code":"train[\"age\"].hist(bins=20)\nplt.show()","opts":["年齡直方圖（示意）","正負類比例（真實計數）","檢查缺失值"],"questions":[]},{"section":1,"kind":"quiz","title":"第一節快速檢核","lead":"確認競賽目標、資料檔案、分類不平衡與上傳格式。","observe":"直接選答案。答錯只提示，答對才顯示理由。","think":"下一節建立簡單、可成功輸出 CSV 的模型。","code":"","opts":[],"questions":[{"prompt":"本競賽應提交哪一種預測？","choices":["每位借款人的年齡","每筆測試資料發生嚴重逾期的機率","每筆資料的真實標籤","模型訓練時間"],"ok":1,"hint":"競賽問的是未來兩年的嚴重逾期風險。","why":"提交的是每筆測試資料的預測機率，介於 0 與 1 之間。"},{"prompt":"哪一個檔案用來確認 submission.csv 的欄位格式？","choices":["Data Dictionary.xls","cs-training.csv","sampleEntry.csv","README.txt"],"ok":2,"hint":"找名字帶有 sample 的提交範例。","why":"sampleEntry.csv 是官方提供的提交格式範例，應依照它的欄名與列數建立新檔。"},{"prompt":"若正類只有約 6.7%，只猜 0 的模型為何有問題？","choices":["Accuracy 一定是 0","雖然 Accuracy 高，卻抓不到正類","資料一定讀錯","無法輸出 CSV"],"ok":1,"hint":"想想少數的正類會發生什麼事。","why":"一律猜 0 仍可得到約 93.3% Accuracy，卻無法辨識正類，所以不能只看 Accuracy。"}]},{"section":2,"kind":"start2","title":"第二節：從 CSV 建立第一個分類模型","lead":"採用已學過的 LogisticRegression，加上缺失值處理；先做自己的驗證，再預測 Kaggle 測試資料。","observe":"選擇「切分、訓練、評估、提交預測」中的一步。","think":"重要原則：驗證集只用來評估，不用來讓模型事先看答案。","code":"","opts":["切分資料","訓練模型","驗證效果","預測測試集"],"questions":[]},{"section":2,"kind":"split","title":"切分 train／validation，不碰 Kaggle test","lead":"從 cs-training.csv 自行切出 80% 訓練與 20% 驗證，使用 stratify 保持類別比例；Kaggle 的 cs-test.csv 等到模型確定後才預測。","observe":"在三組資料之間切換，注意哪些資料有 y。","think":"驗證集和 Kaggle test 是兩種不同用途的資料。","code":"from sklearn.model_selection import train_test_split\nX_train, X_val, y_train, y_val = train_test_split(\n    X, y, test_size=0.2,\n    random_state=42, stratify=y\n)","opts":["模型訓練","自行驗證","Kaggle 測試"],"questions":[]},{"section":2,"kind":"baseline","title":"先有基準，才知道改進了多少","lead":"ROC-AUC 約 0.5 可理解成接近隨機排序，越高通常代表對正負樣本的排序能力越好。不是正確率百分比。","observe":"比較示意 ROC 線：隨機基準與較佳排序。數值為觀念示意。","think":"AUC=0.85 不是 85% 的人預測正確。","code":"","opts":["隨機基準 AUC≈0.50","排序較好（示意）"],"questions":[]},{"section":2,"kind":"logreg","title":"第一版：LogisticRegression 加上補值","lead":"先使用簡單、可解釋的模型。Pipeline 會讓填補缺失與標準化跟模型綁在一起，避免忘記對測試集套用相同規則。","observe":"依序觀察「補值 → 標準化 → fit」。","think":"先做出能順利提交的 baseline，比一次加入大量陌生套件更有效。","code":"model = make_pipeline(\n    SimpleImputer(strategy=\"median\"),\n    StandardScaler(),\n    LogisticRegression(max_iter=1000)\n)\nmodel.fit(X_train, y_train)","opts":["補缺失值","標準化","訓練分類器"],"questions":[]},{"section":2,"kind":"proba","title":"predict_proba：取出類別 1 的機率","lead":"`predict()` 回傳 0 或 1；`predict_proba()` 會給每類機率。上傳要取第 2 欄（類別 1），不能把預測類別當成機率。","observe":"切換 `predict` 與 `predict_proba`，看同一筆示意資料輸出差異。","think":"為什麼排序評估要保留 0.12、0.71 等機率，而非全部只剩 0 或 1？","code":"prob = model.predict_proba(X_val)[:, 1]\nprint(prob[:5])","opts":["predict：0 或 1","predict_proba：機率"],"questions":[]},{"section":2,"kind":"auc","title":"用 roc_auc_score 檢查自己的驗證表現","lead":"先算本地 validation ROC-AUC，確定程式有效，再交給 Kaggle 的未知測試標籤評分。畫 ROC 曲線有助於理解不同門檻。","observe":"調整示例機率排序，觀察 ROC 曲線與 AUC。示意資料不代表 Kaggle 成績。","think":"不要把本地 AUC 說成 Kaggle 的測試分數。","code":"from sklearn.metrics import roc_auc_score\nval_prob = model.predict_proba(X_val)[:, 1]\nauc = roc_auc_score(y_val, val_prob)\nprint(\"Validation AUC:\", round(auc, 5))","opts":["較差排序","中等排序","較好排序"],"questions":[]},{"section":2,"kind":"alternatives","title":"第二版：試試決策樹或隨機森林","lead":"模型比較必須固定同一筆切分與評估方法。決策樹容易理解，但較深的樹可能過度擬合；隨機森林可作為延伸選做。","observe":"切換三種模型，觀察複雜度與適合的學習階段。","think":"不要因為模型名稱較新，就先假定 Kaggle 成績比較好。","code":"from sklearn.tree import DecisionTreeClassifier\ntree = make_pipeline(\n    SimpleImputer(strategy=\"median\"),\n    DecisionTreeClassifier(max_depth=5, random_state=42)\n)\ntree.fit(X_train, y_train)","opts":["邏輯斯迴歸","決策樹 depth=5","隨機森林（選做）"],"questions":[]},{"section":2,"kind":"leakage","title":"不能從驗證集或 Kaggle test 偷看答案","lead":"如果先用全部資料計算補值或先調到「看過答案的分數最好」，評估就可能偏樂觀。Pipeline 可減少前處理洩漏。","observe":"切換「錯誤流程／正確流程」，看看資料在哪一步被使用。","think":"只有 Kaggle 官方會知道隱藏測試集的真實標籤；反覆針對排行榜調參也可能過度擬合。","code":"","opts":["錯誤：先用全資料補值","正確：切分後 fit Pipeline"],"questions":[]},{"section":2,"kind":"submission","title":"submission.csv：欄位、列數、順序都要正確","lead":"以 sampleEntry.csv 為模板，保留 Id，將 Probability 換成對 cs-test.csv 的模型預測機率；保留測試資料的原始列順序。","observe":"點選「正確提交／錯誤範例」，檢查欄名、列數、機率範圍。","think":"請從 sampleEntry.csv 確認正式欄名，勿自行改成 Pred 或 y。","code":"sample = pd.read_csv(\"sampleEntry.csv\")\nX_submit = test[X.columns]\np = model.predict_proba(X_submit)[:, 1]\nassert len(p) == len(sample)\nsample[\"Probability\"] = p\nsample.to_csv(\"submission.csv\", index=False)","opts":["正確：Id, Probability","錯誤：上傳 0／1","錯誤：少了列數"],"questions":[]},{"section":2,"kind":"quiz","title":"第二節快速檢核","lead":"確認 Pipeline、ROC-AUC、`predict_proba` 與 submission 的規格。","observe":"直接選答案；答對顯示原因。","think":"下一節進行真正的 Kaggle Late Submission。","code":"","opts":[],"questions":[{"prompt":"上傳 Kaggle 應使用哪一個模型方法的輸出？","choices":["predict(X_val)","predict_proba(X_submit)[:, 1]","fit(X_submit)","score(X_train, y_train)"],"ok":1,"hint":"Kaggle 需要介於 0 與 1 的風險分數。","why":"必須用已訓練模型對官方測試集預測正類機率，才能產生需要的 Probability 欄。"},{"prompt":"ROC-AUC=0.84，應如何解讀？","choices":["84% 的人被正確分類","排序辨識能力指標，越高通常越好","84% 的人會逾期","機率都等於 0.84"],"ok":1,"hint":"ROC-AUC 並非以一個固定門檻算出的 Accuracy。","why":"ROC-AUC 量測正負類預測分數的區分／排序能力，不能直接說成分類正確率。"},{"prompt":"為了避免資料洩漏，補值器的 fit 應在哪裡做？","choices":["訓練集","訓練＋驗證合起來","用 Kaggle test 的答案","每一筆隨意設定"],"ok":0,"hint":"想想哪些資料是模型訓練時應該看到的。","why":"補值器只從訓練資料學習參數，再用 transform 處理驗證與未標記的測試資料。"}]},{"section":3,"kind":"start3","title":"第三節：提交、讀分、與歷史隊伍比較","lead":"本節完成實際上傳 submission.csv，抄下 Kaggle 回傳的分數，再做一次有依據的改善與分享。","observe":"按順序查看五步驟，了解哪些要在 Kaggle 網站完成。","think":"成績一定要從你的 Kaggle 帳號讀取；投影片不會冒充真正的提交結果。","code":"","opts":["開競賽","找 Late Submission","選 CSV","等評分","記錄成績"],"questions":[]},{"section":3,"kind":"upload","title":"真正上傳到 Kaggle：逐步操作","lead":"登入前先確認未成年使用者與競賽資格；符合規定者可開啟競賽、同意規則並提交。若無法合法參賽，由教師操作示範、學生保留本地驗證。","observe":"切換每個網站動作與常見障礙；畫面是操作示意，非 Kaggle 即時截圖。","think":"請勿共用教師的 Kaggle 登入帳號；示範應由教師本人操作。","code":"","opts":["登入競賽","接受規則","上傳 CSV","確認分數"],"questions":[]},{"section":3,"kind":"score","title":"請填入「你剛剛真的拿到的分數」","lead":"把 Kaggle 顯示的 ROC-AUC 手動輸入，下方立即與隨機基準及歷史第一名參考分數比較；不會產生虛構名次。","observe":"使用下方數字輸入框，輸入自己提交後的 AUC；未輸入前只顯示待填。","think":"要比較同一類指標；不要把 Public、Private 或 Late Submission 當成完全相同的排行榜。","code":"","opts":[],"questions":[]},{"section":3,"kind":"champion","title":"和 2011 年當年隊伍比，該怎麼看？","lead":"歷史資料整理指出第一名 Perfect Storm 的最終 ROC-AUC 約 0.869558。這是歷史參考，並非保證與 Late Submission 直接同榜計名次。","observe":"比較「你的實際 AUC（自行輸入）」與「歷史參考 0.869558」，看差距而非假排名。","think":"看到歷史成績時，先確認比較的是 Public 還是 Private；正式排名與賽後提交分開。","code":"","opts":["2011 歷史參考","我的提交成績"],"questions":[]},{"section":3,"kind":"improve","title":"第一次分數不是終點：每次只改一件事","lead":"先固定切分與指標；第二次可比較缺失值處理、特徵、決策樹深度或另一種模型，不要一次全部更動。","observe":"從四個改善方向選一項，觀察建議的程式改動位置。","think":"請在本地 AUC 改善後，再決定是否消耗每日有限的 Kaggle 提交次數。","code":"","opts":["調整缺失值","換模型","調整深度","檢查特徵"],"questions":[]},{"section":3,"kind":"ai","title":"請 AI 幫忙改程式：要求「最小修改」","lead":"AI 可以解釋錯誤與提供改進建議。請提供錯誤訊息、欄位名稱、程式片段與評估指標，不要傳 API Key、個人資料或完整敏感紀錄。","observe":"比較含糊提問與具體提問；可複製一段適合高一使用的 Prompt。","think":"AI 建議的修改必須重跑驗證、重新產生 CSV，不能只看它說會變好。","code":"","opts":["模糊提問","具體、可驗證的提問"],"questions":[]},{"section":3,"kind":"iterate","title":"兩次提交：有紀錄才知道改善是否有效","lead":"記錄模型名稱、改動內容、本地 Validation AUC、Kaggle 實際分數與是否成功；同學之間分享「原因」而非只比較高低。","observe":"在可輸入的表格中填寫 v1／v2 的實際分數，觀察差距。","think":"若 v2 不如 v1，仍然是有價值的實驗結果。","code":"","opts":[],"questions":[]},{"section":3,"kind":"ethics","title":"信用風險資料：成績之外還有什麼限制？","lead":"模型與資料可能反映偏差；AUC 高不表示個人決策公平或機率已校準。教學結果不得直接用來核准或拒絕真實貸款。","observe":"切換資料偏差、模型錯誤與使用邊界，練習說明限制。","think":"競賽的目標是學習建模與評估，不是替真實個人貼上風險標籤。","code":"","opts":["資料代表性","誤判與公平","不可直接決策"],"questions":[]},{"section":3,"kind":"report","title":"最後分享：問題、資料、方法、結果、限制","lead":"依原本課綱完成簡短成果分享：說出預測什麼、讀了哪些資料、用了什麼模型、實際得到什麼分數，以及哪裡不可靠。","observe":"切換五個報告要素，查看可以直接採用的學生句型。","think":"展示 Kaggle 成績時須註明提交日期與榜單類型，不得填寫虛構的分數或名次。","code":"","opts":["問題","資料","方法","結果","限制"],"questions":[]},{"section":3,"kind":"quiz","title":"第三節快速檢核","lead":"確認 Kaggle 上傳、歷史比較、AI 改程式與結果分享。","observe":"三題完成後就可以開始動手製作與提交。","think":"最重要的成果：會產生 CSV、拿到可追溯的分數、說明模型的限制。","code":"","opts":[],"questions":[{"prompt":"第一次提交後，正確的「Kaggle 分數」從哪裡取得？","choices":["依照投影片自動顯示","實際登入 Kaggle 查看提交結果","用訓練集 Accuracy 當作 Kaggle 分數","請 AI 猜一個"],"ok":1,"hint":"真實評分是由競賽平台處理。","why":"需要登入 Kaggle，查看該次提交處理狀態與 ROC-AUC；教學示意或本地驗證分數不能冒充。"},{"prompt":"比較自己 2026 年 Late Submission 與 2011 年冠軍時，應注意什麼？","choices":["一定有當年正式排名","先確認榜單類型及評估條件","AUC 越低越好","不需要記錄分數"],"ok":1,"hint":"2011 與現在是不同的提交時點。","why":"歷史冠軍 AUC 可作為參考，但不應推論賽後提交直接取得當年正式名次。"},{"prompt":"使用 AI 修改模型程式，哪一個流程最合理？","choices":["完全相信 AI 提供的成績","把 API Key 貼給 AI","一次亂改所有地方","一次修改一個條件、重跑驗證、記錄再提交"],"ok":3,"hint":"要能歸因於修改內容，並保有真實驗證。","why":"每次更動後先在固定驗證集比較本地 ROC-AUC，成功後再考慮提交，並記錄原始與修改版結果。"}]}];
+const STARTER_CODE = "import pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import roc_auc_score\n\ntrain = pd.read_csv(\"cs-training.csv\")\ntest = pd.read_csv(\"cs-test.csv\")\nsample = pd.read_csv(\"sampleEntry.csv\")\n\ntarget = \"SeriousDlqin2yrs\"\nX = train.drop(columns=[\"Unnamed: 0\", target], errors=\"ignore\")\ny = train[target]\nX_submit = test[X.columns]\n\nX_train, X_val, y_train, y_val = train_test_split(\n    X, y, test_size=0.2, random_state=42, stratify=y\n)\n\nmodel = make_pipeline(\n    SimpleImputer(strategy=\"median\"),\n    StandardScaler(),\n    LogisticRegression(max_iter=1000)\n)\nmodel.fit(X_train, y_train)\nval_prob = model.predict_proba(X_val)[:, 1]\nauc = roc_auc_score(y_val, val_prob)\nprint(\"Validation ROC-AUC:\", round(auc, 5))\n\nmodel.fit(X, y)\ntest_prob = model.predict_proba(X_submit)[:, 1]\nassert len(test_prob) == len(sample)\nassert list(sample.columns) == [\"Id\", \"Probability\"]\nassert (test_prob >= 0).all() and (test_prob <= 1).all()\nsample[\"Probability\"] = test_prob\nsample.to_csv(\"submission.csv\", index=False)\nprint(\"已建立 submission.csv：\", len(sample), \"筆\")\n";
+const root=document.getElementById('deck');
+const colors=['#5681e2','#4baf9b','#ef9f69','#956fce'];
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=x=>Number(x).toFixed(5);
+const label=(s)=>`<div class="vizlabel">${esc(s)}</div>`;
+const banner=(s,cls='')=>`<div class="banner ${cls}">${s}</div>`;
+const box=(a,b,c='',active=false,cls='')=>`<div class="vcard ${active?'active':''} ${cls}"><small>${esc(a)}</small><b>${esc(b)}</b>${c?`<small>${esc(c)}</small>`:''}</div>`;
+const row=(...a)=>`<div class="vrow">${a.join('')}</div>`;
+const stack=(...a)=>`<div class="vstack">${a.join('')}</div>`;
+const bars=(vals,max=100)=>vals.map(([name,v,txt,col])=>`<div class="barrowx"><span>${esc(name)}</span><span class="bartrackx"><span class="barfillx ${col||''}" style="width:${Math.max(0,Math.min(100,v/max*100))}%"></span></span><b>${esc(txt??v)}</b></div>`).join('');
+const flow=(arr,active)=>row(...arr.flatMap((x,i)=>i?[`<span class="flowarr">→</span>`,box('步驟 '+(i+1),x,'',i===active)]:[box('步驟 1',x,'',i===active)]));
+const metric=(k,v,s)=>`<div class="metric"><div class="key">${esc(k)}</div><div class="val">${v}</div><div class="small">${esc(s)}</div></div>`;
+const ctable=(heads,rows,hi=[])=>`<table class="smalltable"><thead><tr>${heads.map(t=>`<th>${esc(t)}</th>`).join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr>${r.map((c,j)=>`<td class="${hi.includes(i+'-'+j)?'hi':''}">${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+const tags=a=>`<div class="choicepoints">${a.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>`;
+const indicator=(curr,total)=>`<div class="indicators">${Array.from({length:total},(_,i)=>`<span class="${i===curr?'on':''}">${i+1}</span>`).join('')}</div>`;
+const kaggleUrl='https://www.kaggle.com/competitions/GiveMeSomeCredit';
+const githubUrl='https://github.com/telunyang/python_machine_learning/tree/main/cases/Give_Me_Some_Credit';
+const links=(pairs)=>`<div class="support-links">${pairs.map(([text,url])=>`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(text)} ↗</a>`).join('')}</div>`;
+let page=0,overlay='',states={},scores={kaggle:'',v1:'',v2:'',local:''};
+function st(){return states[page]||(states[page]={mode:0,q:0,answer:-1,correct:false,wrong:false})};
+function scoreOk(s){return s!==''&&Number.isFinite(Number(s))&&Number(s)>=0&&Number(s)<=1}
+function scoreText(s){return scoreOk(s)?Number(s).toFixed(5):'待填入'}
+function compText(x,reference){if(!scoreOk(x))return '請先輸入 Kaggle 真實 ROC-AUC';let d=Number(x)-reference;return `與歷史參考值相差 ${d>0?'+':''}${d.toFixed(5)}（僅供學習比較）`}
+function scoreInput(key,place='0.8'){
+ const val=scores[key];return `<input class="liveinput" type="number" min="0" max="1" step="0.00001" data-score="${key}" value="${esc(val)}" placeholder="${place}" aria-label="${key} ROC-AUC">`;
+}
+function rocChart(mode){
+ const curves=[[[0,0],[1,1]],[[0,0],[.04,.18],[.13,.49],[.35,.75],[.6,.91],[1,1]],[[0,0],[.03,.42],[.13,.75],[.27,.87],[.53,.945],[1,1]]];
+ const a=curves[mode],sx=x=>58+x*560,sy=y=>242-y*220;
+ let d=a.map(([x,y],i)=>(i?'L':'M')+sx(x).toFixed(0)+' '+sy(y).toFixed(0)).join(' ');
+ return `<svg viewBox="0 0 680 278" class="plot-svg" role="img" aria-label="ROC 曲線示意圖"><rect x="58" y="22" width="560" height="220" fill="#f8fbff" stroke="#dbe7f2"/>${[.25,.5,.75].map(v=>`<line x1="58" y1="${sy(v)}" x2="618" y2="${sy(v)}" stroke="#e8eef8"/><line x1="${sx(v)}" y1="22" x2="${sx(v)}" y2="242" stroke="#e8eef8"/>`).join('')}<path d="M58 242 L618 22" fill="none" stroke="#9eb0c6" stroke-width="3" stroke-dasharray="8 7"/><path d="${d}" fill="none" stroke="#356ddd" stroke-width="5" stroke-linejoin="round"/>${[[0,'0'],[.5,'0.5'],[1,'1.0']].map(([t,u])=>`<text x="${sx(t)}" y="259" font-size="13" fill="#5f7d95" text-anchor="middle">${u}</text>`).join('')}<text x="348" y="276" text-anchor="middle" font-size="13" fill="#587895">False Positive Rate</text><text x="15" y="135" font-size="12" fill="#587895" transform="rotate(-90 15 135)" text-anchor="middle">True Positive Rate</text></svg>`;
+}
+function hist(){let data=[13,32,60,90,115,138,120,104,78,44,20,8];return `<div class="histchart">${data.map(n=>`<div class="histbar" style="height:${n}px"></div>`).join('')}</div><div class="footnote">圖示為模擬年齡分布，非 Kaggle 訓練資料統計</div>`}
+function quizVisual(s,z){const q=s.questions[z.q];return `<div class="quizframe"><div class="quizquestion">${esc(q.prompt)}</div><div class="quizoptions">${q.choices.map((a,i)=>`<button class="quizchoice ${z.answer===i?(z.correct?'right':'wrong'):''}" ${z.correct?'disabled':''} data-answer="${i}">${'ABCD'[i]}　${esc(a)}</button>`).join('')}</div><div class="quizindex">第 ${z.q+1} 題 / 共 3 題</div></div>`}
+function visual(s,z){const m=z.mode;
+ switch(s.kind){
+ case 'cover':return stack(label('第六週真實任務：資料 → 模型 → Kaggle'),flow(['整理資料','訓練預測','取得成績'],m),row(box('前 3 週','Python + Pandas + scikit-learn','整理資料、訓練分類器',m===0),box('本週新任務','Kaggle Submission','到網站取得正式評分',m===2)),banner('不是「練習假的排行榜」：用真實競賽 CSV 體驗完整提交流程。','green'));
+ case 'history':return stack(row(box('正式競賽','2011/09/19 — 12/15','當年排名已結束',m===0),box('目前標示','Late Submission','供賽後練習參考',m===1),box('課堂前','登入並檢查入口','頁面與權限可能調整',m===2)),banner(['當年有正式賽事、獎項與最終排名。','現在重點是提交檔案、讀到實際分數，不會取得 2011 年的正式名次。','高一學生要先確認年齡資格；若無法合法提交，由老師示範，學生完成本地驗證。'][m],m===2?'warn':''),links([['競賽首頁',kaggleUrl],['官方規則',kaggleUrl+'/rules']]));
+ case 'target':return stack(label('SeriousDlqin2yrs = 兩年內是否發生嚴重逾期'),row(box('標籤 0','沒有發生','訓練資料中的真實值',m===0),box('標籤 1','有發生','訓練資料中的真實值',m===1),box('模型輸出','0.80','一筆示意風險機率',m===2)),banner(['分類真實答案：0（否）','分類真實答案：1（是）','提交內容：0 到 1 之間的機率；並非已確定發生。'][m]));
+ case 'files':{let t=[['cs-training.csv','用於模型 fit、自己切出 validation','含目標標籤'],['cs-test.csv','模型要預測的資料，供 Kaggle 評分','沒有可用的真實標籤'],['sampleEntry.csv','正式 submission 的欄名及列數模板','Id、Probability'],['Data Dictionary.xls','每項欄位名稱和定義的資料字典','閱讀欄位意義']];return stack(row(...t.map((x,i)=>box(x[0],['訓練','預測','模板','說明'][i],'',i===m))),banner(`<b>${t[m][0]}</b>：${t[m][1]}；${t[m][2]}`),links([['前往 Kaggle Data',kaggleUrl+'/data']]));}
+ case 'datasize':return stack(label(m===0?'訓練檔案：有答案':'測試檔案：需要你產生答案'),row(box('訓練資料','150,000 筆','每筆 10 個特徵 + 目標標籤',m===0),box('官方測試','101,503 筆','每筆 10 個特徵，目標不可見',m===1)),bars([['訓練資料',150000,'150,000'],['官方測試',101503,'101,503','teal']],150000),banner(m===0?'用來學模型並自行切出驗證集。':'每筆要生成一個 Probability，不可以把 validation 的列拿去提交。','green'));
+ case 'features':return stack(label('左側特徵 X 是已知紀錄；右側 y 是預測目標'),ctable(['欄位名稱','角色','示意值'],[['age','特徵 X','45'],['MonthlyIncome','特徵 X','6,000'],['NumberOfTimes90DaysLate','特徵 X','1'],['SeriousDlqin2yrs','目標 y','0 或 1'],['Unnamed: 0','列編號','123']],m===0?['0-1','1-1','2-1']:m===1?['3-1']:['4-1']),banner(['模型只用 X 預測 y，不應偷放真實標籤。','訓練集中的 y 是已知答案；Kaggle 測試集的 y 不可得。','Unnamed: 0 是原始列編號，不應當成特徵。'][m]));
+ case 'missing':return stack(label('MonthlyIncome（教學模擬）'),ctable(['樣本','原始資料','補值結果'],[['甲','60,000','60,000'],['乙','NaN',m===0?'NaN':m===1?'0':'50,000'],['丙','50,000','50,000'],['丁','40,000','40,000']],['1-2']),banner(['缺值應先確認原因，不要忽略。','直接補 0 可能把「未知」誤當作「收入為 0」。','用訓練資料中位數補值，可作為容易理解的 baseline。'][m],m===1?'warn':m===2?'green':''));
+ case 'imbalance':return stack(label('訓練資料真實正類比例約 6.68%'),bars([['未發生（0）',139974,'139,974'],['發生（1）',10026,'10,026','coral']],150000),row(box('全部猜 0','93.32%','Accuracy 仍看似很高',m===0),box('ROC-AUC','看排序','競賽使用的主要評分指標',m===1)),banner(m===0?'一個正類都找不到，卻依然能得到約 93.3% 的 Accuracy。':'改看正負類的預測機率能否區分，讓模型比較更有意義。',m===0?'warn':'green'));
+ case 'eda':return stack(label(['Age 分布圖（示意）','類別比例（150,000 筆訓練資料）','缺值檢查（示意）'][m]),m===0?hist():m===1?bars([['標籤 0',139974,'93.32%'],['標籤 1',10026,'6.68%','coral']],150000):ctable(['欄位','有缺失？','思考'],[['age','可能有異常','檢查範圍'],['MonthlyIncome','有缺失','考慮中位數'],['NumberOfDependents','有缺失','考慮中位數']]),banner(['直方圖用來查看數值分布；資料必須真正讀取後才能畫出真實圖。','從訓練集標籤計數：注意少數類別只有約 6.68%。','資料清理需有紀錄，不能直接假設缺失值都是 0。'][m]));
+ case 'start2':return stack(label('訓練的四個階段'),flow(['切分','fit','評估','predict_proba'],m),banner(['只用訓練集學參數，驗證集保留答案。','讓 Pipeline 執行補值、標準化與分類訓練。','查看本地 Validation ROC-AUC，不是假冒 Kaggle 評分。','對官方測試資料輸出風險機率。'][m]));
+ case 'split':return stack(label('來源不同，角色也不同'),row(box('Train','約 120,000 筆','可用 y 訓練',m===0),box('Validation','約 30,000 筆','保留 y，最後評估',m===1),box('Kaggle Test','101,503 筆','隱藏 y，提交機率',m===2)),banner('這裡的 120,000／30,000 是從 150,000 筆作 80／20 切分，不是 Kaggle 原本提供的兩種檔案。','green'));
+ case 'baseline':return stack(label(['隨機排序基準（觀念示意）','較佳模型的 ROC 曲線（觀念示意）'][m]),rocChart(m?2:0),row(box('AUC 約 0.50','隨機基準','不代表 50% Accuracy',!m),box('AUC 越高','排序通常越有區辨力','仍需看模型限制',!!m)));
+ case 'logreg':return stack(label('Pipeline：從 X_train 到模型'),flow(['補中位數','StandardScaler','LogisticRegression'],m),banner(['SimpleImputer 只以訓練資料估計補值值。','標準化不同尺度的特徵，避免單位影響模型訓練。','fit 使用 X_train, y_train。'][m]),tags(['SimpleImputer','StandardScaler','LogisticRegression']));
+ case 'proba':return stack(label('同一個人：模型輸出的形式不一樣（數字為示例）'),ctable(['方法','示意輸出','用於上傳？'],[['predict()','1','否'],['predict_proba()','[0.23, 0.77]','取正類機率 0.77']],m===0?['0-1']:['1-1','1-2']),bars([['類別 0',23,'0.23'],['類別 1',77,'0.77','teal']],100),banner('正類是 SeriousDlqin2yrs=1，使用 predict_proba(X)[:, 1]。','green'));
+ case 'auc':return stack(label('依示意排序切換 ROC 曲線（不是 Kaggle 實際成績）'),rocChart(m),row(box('本地 AUC','roc_auc_score','拿 validation 的 y 核對',true),box('Kaggle Score','實際提交後取得','只能從自己的帳號查看',false)),banner(['分類分數若排序很差，AUC 可能低於 0.5。','ROC-AUC 反映不同門檻下的區分能力。','更理想的排序，使 ROC 更靠近左上角。'][m]));
+ case 'alternatives':return stack(label('用相同 Validation 資料公平比較模型'),row(box('模型',['LogisticRegression','DecisionTree','RandomForest'][m],['第一版：先能完成提交','修改深度、觀察過度擬合','選做：多棵樹的組合'][m],true)),tags(['固定 random_state=42','同一個驗證集','同一 ROC-AUC 指標']),banner('沒有實際跑資料前，不能宣稱哪一個模型較高分。','warn'));
+ case 'leakage':return stack(label(m?'正確的切分與前處理順序':'錯誤流程：驗證集不知不覺參與了 fit'),flow(m?['先切分','Train fit','Val transform']:['全體補值','再切分','驗證偏樂觀'],m?1:0),banner(m?'Pipeline 在訓練時估計補值與標準化參數，驗證只套用 transform。':'這樣會讓驗證資料洩漏資訊，使評估不能公平代表新資料。',m?'green':'warn'));
+ case 'submission':return stack(label('Kaggle 官方提交格式：101,503 筆、兩個欄位'),`<div class="csvpreview">${m===0?'Id,Probability\n1,0.0832\n2,0.5921\n3,0.2144':m===1?'Id,Probability\n1,0\n2,1\n3,0':'Id,Probability\n1,0.0832\n2,0.5921\n...（只有 3 列）'}</div>`,banner(['正確：順序對應 cs-test，每個值是 0～1 的機率。','不適合：只提供 0／1 類別，會失去細緻排序資訊。','錯誤：只有部分列數；提交需涵蓋全部 101,503 筆。'][m],m===0?'green':'warn'));
+ case 'start3':return stack(label('準備去 Kaggle 網站實際操作'),flow(['取得 CSV','上傳','等待評分'],Math.min(m,2)),indicator(m,5),banner(['開啟競賽首頁。','尋找 Submit 或 Late Submission。','選擇剛產生的 submission.csv。','由網站顯示處理狀態。','記錄真實 ROC-AUC、提交日期與榜單類型。'][m]),links([['開啟 Kaggle',kaggleUrl]]));
+ case 'upload':return stack(label('這些步驟必須真的在 Kaggle 網站操作'),row(box('01','登入','使用自己的帳號',m===0),box('02','接受規則','確認資料權限',m===1),box('03','上傳 CSV','透過提交頁',m===2),box('04','讀取分數','只抄真實結果',m===3)),banner(['首次需要建立或登入帳號。','未滿 18 歲先確認賽事資格及家長同意；未符合者不能自己提交。','選擇檔案 submission.csv，先看預覽與格式。','若顯示錯誤，先修 CSV；若無入口，記錄原因。'][m]),links([['直接前往競賽',kaggleUrl],['提交頁',kaggleUrl+'/submit']]));
+ case 'score':return stack(label('貼上 Kaggle 實際顯示的 ROC-AUC（0 到 1）'),row(box('ROC-AUC','實際輸入','不得填猜測分數',true)),`<div style="text-align:center">${scoreInput('kaggle')}</div>`,`<div class="bigscore">${scoreText(scores.kaggle)}</div>`,`<div class="livetxt">${compText(scores.kaggle,0.869558)}</div>`,banner('這裡只是本機比較工具；輸入的數字不會傳送給 Kaggle。','green'));
+ case 'champion':return stack(label('2011 年「Perfect Storm」歷史冠軍參考：ROC-AUC 0.869558'),row(box('歷史第一名','0.869558','參考資料整理所得',m===0),box('你的提交',scoreText(scores.kaggle),'需先在上一張輸入真實分數',m===1)),bars([['歷史參考',86.9558,'0.86956'],['我的實際分數',scoreOk(scores.kaggle)?Number(scores.kaggle)*100:0,scoreText(scores.kaggle),'teal']],100),banner(compText(scores.kaggle,0.869558)),links([['2011 排行榜',kaggleUrl+'/leaderboard']]));
+ case 'improve':return stack(label('每次只改一個條件，才能知道原因'),row(box('改動選項',['補值策略','模型種類','樹深 max_depth','特徵欄位'][m],['median → most_frequent（示意）','Logistic → DecisionTree','max_depth=3 → 5','檢查不合理欄位'][m],true)),tags(['先看 Validation ROC-AUC','只改一個設定','保留舊版 submission']),banner('注意：任何改動都不保證 AUC 上升；驗證後再考慮重新提交。','green'));
+ case 'ai':{let prompt='我正在參與 Kaggle Give Me Some Credit 的高一實作。\n目前使用 Pandas、SimpleImputer、LogisticRegression。\n這是匿名化後的程式片段與錯誤訊息：［貼上］\n請只建議一個最小修改，解釋原因，\n並教我用相同 validation ROC-AUC 驗證。\n請不要編造 Kaggle 分數。';return stack(label('AI 的角色是程式輔助，不是製造虛構成績'),m===0?banner('「幫我把分數改成第一名！」— 需求不明確，而且不能保證。','warn'):`<div class="longcode" style="font-size:13px;line-height:1.47">${esc(prompt)}</div>`,row(box('提供什麼','欄位、程式、錯誤','可以去識別化',m===1),box('不要提供','金鑰、個資','不能貼出敏感資料',m===0)),`<div style="text-align:center"><button class="subbtn" data-action="copyprompt">複製可驗證的 Prompt</button></div>`);}
+ case 'iterate':return stack(label('填入兩次 Kaggle 實際 ROC-AUC，並記下模型改動'),ctable(['版本','模型或改動','Kaggle AUC'],[['v1','Baseline',scoreText(scores.v1)],['v2','一項修改',scoreText(scores.v2)]]),`<div class="vrow" style="align-items:center"><div style="flex:1;text-align:center">v1　${scoreInput('v1','0.80')}</div><div style="flex:1;text-align:center">v2　${scoreInput('v2','0.83')}</div></div>`,banner(scoreOk(scores.v1)&&scoreOk(scores.v2)?`v2 − v1 = ${(Number(scores.v2)-Number(scores.v1)).toFixed(5)}（已輸入之實際數值）`:'請填入真實得分；兩者都輸入後才計算差距。'),`<div style="text-align:center"><button class="subbtn" data-action="downloadrecord">下載比較紀錄 CSV</button></div>`);
+ case 'ethics':return stack(row(box('資料代表性','偏差','來源年代與族群不一定適用現在',m===0),box('誤判影響','公平','風險分數不是一個人的價值',m===1),box('使用邊界','教學','不得直接決定真實貸款審核',m===2)),banner(['2011 年的匿名資料未必能代表今天全部借款人。','某些群體可能受到模型誤判與不公平影響。','AUC 高不保證公平或機率校準，結果僅供課程分析。'][m],m===2?'warn':''));
+ case 'report':{let rows=[['問題','預測兩年內嚴重逾期風險的機率。'],['資料','使用 Kaggle 的 train/test，了解缺值與標籤。'],['方法','以 Pipeline 訓練分類器並用 ROC-AUC 比較。'],['結果','我的 Validation AUC 是 ___，Kaggle AUC 是 ___。'],['限制','資料可能有偏差，賽後提交與歷史正式名次不同。']];return stack(ctable(['報告要素','學生可以怎麼說'],rows,[m+'-0',m+'-1']),banner(`發表第 ${m+1} 個重點：${rows[m][0]}。說明自己真正做了什麼，不要只讀投影片。`),tags(['1 分鐘分享','顯示實際提交結果','說明一個改進與限制']));}
+ case 'quiz':return quizVisual(s,z);
+ default:return stack(banner(s.observe));
+ }
+}
+function codeFor(s,z){
+ if(s.kind==='missing'&&z.mode===1)return 'X_fill = X.fillna(0)\nprint(X_fill.isna().sum())';
+ if(s.kind==='alternatives')return [
+  'from sklearn.linear_model import LogisticRegression\nmodel = LogisticRegression(max_iter=1000)',
+  s.code,
+  'from sklearn.ensemble import RandomForestClassifier\nmodel = RandomForestClassifier(\n    n_estimators=100, random_state=42\n)'
+ ][z.mode];
+ if(s.kind==='improve')return [
+  'SimpleImputer(strategy="median")',
+  'DecisionTreeClassifier(max_depth=5, random_state=42)',
+  'DecisionTreeClassifier(max_depth=3, random_state=42)',
+  'print(X.columns.tolist())'
+ ][z.mode];
+ if(s.kind==='ai')return 'from sklearn.metrics import roc_auc_score\nscore = roc_auc_score(y_val, val_prob)\nprint(round(score, 5))';
+ if(s.kind==='upload')return 'sample.to_csv("submission.csv", index=False)';
+ if(s.kind==='eda')return z.mode===0?'import matplotlib.pyplot as plt\ntrain["age"].hist(bins=20)\nplt.show()':z.mode===1?'train["SeriousDlqin2yrs"].value_counts().plot.bar()\nplt.show()':'print(train.isna().sum())';
+ return s.code||'';
+}
+function syntax(src){
+ const keywords=new Set(['from','import','as','if','else','for','in','not','try','except','assert','def','return']);
+ const calls=new Set(['print','len','round','range','to_csv','read_csv','fit','transform','fit_transform','predict','predict_proba','train_test_split','roc_auc_score','make_pipeline','SimpleImputer','StandardScaler','LogisticRegression','DecisionTreeClassifier','RandomForestClassifier']);
+ return (src.match(/(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*\b|\s+|.)/g)||[]).map(t=>{let cls='';if(/^["']/.test(t))cls='tok-str';else if(/^\d/.test(t))cls='tok-num';else if(keywords.has(t))cls='tok-key';else if(['True','False','None'].includes(t))cls='tok-bool';else if(['pd','np','plt'].includes(t))cls='tok-module';else if(calls.has(t))cls='tok-call';else if(/^[A-Za-z_]\w*$/.test(t))cls='tok-var';return cls?`<span class="${cls}">${esc(t)}</span>`:esc(t)}).join('');
+}
+function editor(s){return `<div class="codewrap"><div class="codehead">Python · 課堂範例</div><pre><code>${s.split('\n').map((l,i)=>`<span class="code-line"><span class="line-no">${i+1}</span>${syntax(l)}</span>`).join('')}</code></pre></div>`}
+function aside(s,z){
+ if(s.kind==='quiz'){const q=s.questions[z.q];return `<div class="smallhead">本節快速檢核</div><div class="lead">${esc(s.lead)}</div>${z.correct?`<div class="quizexplain">${esc(q.why)}</div>`:z.wrong?`<div class="quizhint">提示：${esc(q.hint)}</div>`:`<p class="note">作答後將顯示提示或解析。</p>`}<div class="think">思考一下｜${esc(s.think)}</div>`;}
+ const code=codeFor(s,z);
+ return `<div class="smallhead">核心概念</div><div class="lead">${esc(s.lead)}</div><div class="smallhead">觀察重點</div><p class="note">${esc(s.observe)}</p>${code?editor(code):''}<div class="think">思考一下｜${esc(s.think)}</div>`;
+}
+function controls(s,z){
+ if(s.kind==='quiz')return `<button class="ctrlbtn" data-action="prevq" ${z.q===0?'disabled':''}>上一題</button><span class="question-count">${z.q+1} / 3</span><button class="ctrlbtn primary" data-action="nextq" ${z.q===2||!z.correct?'disabled':''}>下一題</button>`;
+ const base=s.opts.map((name,i)=>`<button class="choicebtn ${z.mode===i?'selected':''}" data-mode="${i}">${esc(name)}</button>`).join('');
+ if(s.kind==='submission'||s.kind==='start3'||s.kind==='report')return base+'<button class="choicebtn" data-action="downloadpy">下載完整 Python 範例</button>';
+ return base;
+}
+function avatar(){return `<svg class="avatar" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="22" fill="#e8ebff"/><path d="M8 44q4-14 14-14t14 14" fill="#5c74bb"/><ellipse cx="22" cy="20" rx="11" ry="13" fill="#f7c5a8"/><path d="M11 19q-3-16 11-15 13-1 12 16l-4-8-8-2-8 5z" fill="#495184"/><circle cx="18" cy="21" r="1.3" fill="#3e5578"/><circle cx="26" cy="21" r="1.3" fill="#3e5578"/></svg>`;}
+function render(){const s=slides[page];root.innerHTML=`<header class="slidehead"><div class="meta"><div class="brand">${avatar()}<span>課程系列｜Python 與資料分析</span><span class="subbrand">教學主題｜課堂專題綜合實作</span></div><span class="chip">第 ${s.section} 節 ／ 3 節</span></div><div class="titleline"><h1>${esc(s.title)}</h1><span class="topicnum">${['認識 Kaggle 與資料','訓練分類與提交','真實評分與成果分享'][s.section-1]} · ${String(page%10+1).padStart(2,'0')}</span></div></header><main class="content"><section class="mainpanel"><div class="panelhead"><span class="panellabel">${s.kind==='quiz'?'快速檢核｜3 題':'觀察與操作｜互動示範'}</span><span class="panelhint">${s.kind==='quiz'?'答錯只有提示，答對才有解析':'示意與真實網站操作清楚區分'}</span></div><div id="viz"></div><div id="controls"></div></section><aside class="sidepanel" id="aside"></aside></main><footer class="foot"><div class="footerMeta"><div class="footnotice">← / → 切換　·　G 總覽　·　H 說明　·　F 全螢幕</div></div><div class="progress">${slides.map((_,i)=>`<span class="pseg ${i<page?'done':i===page?'now':''}"></span>`).join('')}</div><div class="nav"><span class="numlabel">${page+1} / ${slides.length}</span><button data-nav="-1" ${page===0?'disabled':''}>上一頁</button><button class="next" data-nav="1" ${page===slides.length-1?'disabled':''}>下一頁</button></div></footer>`;update(true);if(overlay)showOverlay();}
+function update(ctrl=false){let s=slides[page],z=st();document.getElementById('viz').innerHTML=visual(s,z);document.getElementById('aside').innerHTML=aside(s,z);if(ctrl)document.getElementById('controls').innerHTML=controls(s,z);}
+function go(n){page=Math.max(0,Math.min(slides.length-1,n));overlay='';render();}
+function showOverlay(){let content=overlay==='overview'?`<h2>投影片總覽｜${slides.length} 張</h2><div class="overview">${slides.map((s,i)=>`<button data-goto="${i}" class="${i===page?'active':''}">${String(i+1).padStart(2,'0')}｜${esc(s.title)}</button>`).join('')}</div>`:`<h2>本週操作與資料來源</h2><div class="helptext">← / →：切換投影片　G：總覽　H：操作說明　F：全螢幕　Esc：關閉<br>本 HTML 可離線展示圖解；但下載競賽資料、實際提交及 AI API 需另外連網和登入。<br>● Kaggle 官方原始競賽：<a href="${kaggleUrl}" target="_blank">Give Me Some Credit</a>（2011 年結束，目前顯示 Late Submission）<br>● 資料：<a href="${kaggleUrl}/data" target="_blank">cs-training.csv / cs-test.csv / sampleEntry.csv</a>，依 Kaggle 規則下載<br>● Kaggle 指標：ROC-AUC，提交 Id 與 Probability<br>● 教師 GitHub 範例：<a href="${githubUrl}" target="_blank">Give_Me_Some_Credit</a>（本版未能直接讀取檔案全文）<br>● 2011 歷史冠軍 0.869558：<a href="https://github.crookster.org/SR_Foundations_DS_Fall_2015/capstone/GiveMeSomeCredit/ExtraCredit.html" target="_blank">第三方歷史整理</a><br>● 未滿 18 歲者須先核對該競賽是否允許未成年人與取得家長同意；參見 <a href="https://www.kaggle.com/consent-minors-process" target="_blank">Kaggle 未成年參賽同意說明</a>；未符合資格者只做本地 ROC-AUC，教師以自己的帳號示範。<br>● 「示意 ROC」「示意輸入值」不是模型實際測試結果，Kaggle 得分必須由學生手動填入。<br><small>提醒：信用風險資料僅供機器學習課程教學，不可直接用於真實貸款審核。</small></div>`;
+ root.insertAdjacentHTML('beforeend',`<div class="overveil"><div class="overlay"><button class="closeoverlay" data-action="close">關閉 ×</button>${content}</div></div>`);
+}
+function resize(){const s=Math.min(innerWidth/1280,innerHeight/720);root.style.transform=`scale(${s})`;root.style.left=`${(innerWidth-1280*s)/2}px`;root.style.top=`${(innerHeight-720*s)/2}px`;}
+function dl(name,data,type='text/plain;charset=utf-8'){const b=new Blob([data],{type}),url=URL.createObjectURL(b),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)}
+function record(){let rows=[['版本','Kaggle_ROC_AUC'],['初次提交',scoreOk(scores.kaggle)?scores.kaggle:''],['v1',scoreOk(scores.v1)?scores.v1:''],['v2',scoreOk(scores.v2)?scores.v2:'']];dl('06_kaggle_score_record.csv','\ufeff'+rows.map(r=>r.join(',')).join('\r\n'),'text/csv;charset=utf-8')}
+root.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
+ if(b.hasAttribute('data-nav'))return go(page+Number(b.dataset.nav));
+ if(b.hasAttribute('data-goto'))return go(Number(b.dataset.goto));
+ const z=st();if(b.hasAttribute('data-mode')){z.mode=Number(b.dataset.mode);update(true);return;}
+ if(b.hasAttribute('data-answer')){const n=Number(b.dataset.answer);z.answer=n;z.correct=slides[page].questions[z.q].ok===n;z.wrong=!z.correct;update(true);return;}
+ switch(b.dataset.action){
+ case 'nextq':case 'prevq':z.q+=b.dataset.action==='nextq'?1:-1;z.answer=-1;z.correct=z.wrong=false;return update(true);
+ case 'downloadpy':return dl('06_GiveMeSomeCredit_baseline.py',STARTER_CODE,'text/x-python;charset=utf-8');
+ case 'downloadrecord':return record();
+ case 'copyprompt':{const prompt='我正在參與 Kaggle Give Me Some Credit 的高一實作。\n目前使用 Pandas、SimpleImputer、LogisticRegression。\n這是匿名化後的程式片段與錯誤訊息：［貼上］\n請只建議一個最小修改，解釋原因，並教我用相同 validation ROC-AUC 驗證。\n請不要編造 Kaggle 分數。';
+  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(prompt).catch(()=>dl('ai_prompt.txt',prompt));else dl('ai_prompt.txt',prompt);return;}
+ case 'close':overlay='';return render();
+ }});
+root.addEventListener('change',e=>{const input=e.target;if(!input.matches('input[data-score]'))return;const key=input.dataset.score;const v=input.value.trim();if(v!==''&&!scoreOk(v)){alert('ROC-AUC 請輸入 0 到 1 之間的實際數值。');input.value=scores[key];return;}scores[key]=v;update(false);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay){overlay='';render();return;}if(overlay||/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement?.tagName||''))return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(page+1);}else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(page-1);}else if(e.key.toLowerCase()==='g'){overlay='overview';showOverlay();}else if(e.key.toLowerCase()==='h'||e.key==='?'){overlay='help';showOverlay();}else if(e.key.toLowerCase()==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();}});
+window.addEventListener('resize',resize);resize();render();
+</script></body></html>

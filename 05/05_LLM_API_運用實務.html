@@ -1,0 +1,444 @@
+<!doctype html><html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>05_LLM_API_運用實務</title><style>
+:root{--ink:#173451;--muted:#627890;--blue:#486bdd;--blueLite:#eef3ff;--teal:#008b80;--tealLite:#e6f8f4;--sun:#f2a156;--line:#dfe8f2;--paper:#f4f7fc;--font:'Noto Sans TC','Microsoft JhengHei','PingFang TC',system-ui,sans-serif}
+*{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#dfe7f2;color:var(--ink);font-family:var(--font)} button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.3}
+#deck{position:absolute;left:0;top:0;height:720px;width:1280px;transform-origin:top left;background:radial-gradient(circle at 90% 7%,#e5efff 0,transparent 40%),var(--paper);overflow:hidden;box-shadow:0 22px 90px #233a6470;border-radius:2px}
+.slidehead{height:140px;padding:23px 44px 7px;display:flex;flex-direction:column;justify-content:space-between}
+.meta{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:850;letter-spacing:.25px}
+.avatar{height:41px;width:41px;flex:none;border-radius:13px;background:#e4eaff;box-shadow:inset 0 0 0 2px #d5ddfa;overflow:hidden}
+.subbrand{color:#627992;font-weight:650;font-size:14px;border-left:2px solid #cbd6e4;padding-left:14px}
+.chip{background:white;border:1px solid #dbe5f0;border-radius:25px;padding:9px 16px;font-size:15px;font-weight:800;color:var(--blue)}
+.titleline{display:flex;justify-content:space-between;align-items:flex-end;gap:18px}
+h1{font-size:30px;letter-spacing:-.6px;line-height:1.3;margin:0;font-weight:900;max-width:980px}
+.topicnum{font-size:14px;color:#7990a5;font-weight:700;white-space:nowrap;padding-bottom:5px}
+.content{height:481px;padding:0 44px 0;display:grid;grid-template-columns:748px 1fr;gap:17px}
+.mainpanel,.sidepanel{background:#fff;border:1px solid #e2eaf5;border-radius:21px;box-shadow:0 8px 30px #3b56810c;overflow:hidden}
+.mainpanel{display:flex;flex-direction:column}
+.panelhead{height:55px;padding:15px 24px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(90deg,#fbfdff,#f4f8ff);border-bottom:1px solid #edf2f8}
+.panellabel{color:#6884a0;font-weight:850;font-size:13px;letter-spacing:1px}
+.panelhint{font-size:13px;color:#8293a5;font-weight:700}
+#viz{height:330px;padding:14px 23px 6px;display:flex;flex-direction:column;justify-content:center;align-items:stretch;overflow:hidden}
+#controls{height:96px;padding:11px 22px 12px;border-top:1px solid #ebf0f7;background:#fafdff;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.ctrlbtn,.choicebtn,.quizchoice,.softbtn{border:1px solid #d2e1f1;background:#fff;color:#33516e;border-radius:12px;padding:9px 14px;font-size:15px;font-weight:780;transition:.12s}
+.ctrlbtn:hover,.choicebtn:hover,.quizchoice:hover{border-color:#7394da;background:#f2f6ff}.selected{background:#e4eeff!important;color:#315ac3!important;border-color:#7fa2ee!important}.primary{background:#4772e5;border-color:#4772e5;color:#fff}.primary:hover{background:#355ed6;color:#fff}
+.slidergroup{display:flex;align-items:center;gap:15px;width:95%;font-weight:800;color:#416380;font-size:15px}.slidergroup label{width:140px;white-space:nowrap}.slidergroup input{flex:1;min-width:80px;accent-color:#486bdd;cursor:pointer}.slidergroup output{width:100px;text-align:right;color:#315ac3;font-size:17px;white-space:nowrap}
+.sidepanel{padding:20px 23px;display:flex;flex-direction:column;gap:9px}
+.lead{font-size:19px;font-weight:850;line-height:1.55;color:#1a4063}
+.smallhead{font-size:13px;color:#177d87;letter-spacing:1.4px;font-weight:900;display:flex;align-items:center;gap:7px}
+.note{font-size:16px;line-height:1.65;color:#4e6680;margin:0;overflow-wrap:anywhere}
+.think{margin-top:auto;border-radius:13px;background:#eaf6f6;padding:12px 13px;color:#25676b;font-weight:700;font-size:15px;line-height:1.55;min-height:68px}
+.codewrap{flex-shrink:0;background:#1e1e28;color:#e5e7eb;border:1px solid #384357;border-radius:13px;max-height:205px;min-height:75px;overflow:hidden;box-shadow:0 7px 19px #1d2a4326}
+.codehead{height:29px;background:#282b38;border-bottom:1px solid #424859;display:flex;align-items:center;gap:7px;padding:0 12px;font-size:11px;font-weight:850;color:#aebdd1;letter-spacing:.7px}
+.codehead:before{content:'● ● ●';font-size:11px;letter-spacing:2px;color:#fa8f86;margin-right:8px}
+.codewrap pre{margin:0;padding:11px 14px 12px 10px;font-size:13.2px;line-height:1.53;font-family:Consolas,'Cascadia Code',Monaco,'Noto Sans Mono CJK TC',monospace;white-space:pre;overflow:auto;tab-size:4}
+.code-line{display:block;white-space:pre;min-height:20px}.line-no{color:#778294;display:inline-block;min-width:27px;text-align:right;margin-right:15px;user-select:none}
+.tok-key{color:#c792ea}.tok-str{color:#b9da91}.tok-num{color:#f6bb76}.tok-bool{color:#f29772}.tok-call{color:#82c9f0}.tok-var{color:#d5e3fc}.tok-module{color:#7ad8c4}.tok-op{color:#e6afba}
+.nest-grid{display:flex;align-items:center;justify-content:center;gap:13px}.nest-box{border:2px solid #9ab5ec;background:#f1f6ff;border-radius:15px;padding:16px 18px;min-width:192px;color:#375875;text-align:center;font-weight:800}.nest-box.inner{background:#e4f7f2;border-color:#64b9af}.nest-box .brace{font-size:25px;color:#365ccc;margin-bottom:8px}.nest-box.inner .brace{color:#098479}.syntax-hint{font-size:16px;font-weight:850;color:#647a91;margin-top:14px;text-align:center}
+.foot{height:99px;padding:15px 46px 22px;display:flex;align-items:center;justify-content:space-between;gap:19px}
+.progress{height:8px;display:flex;gap:5px;max-width:390px;flex:1}.pseg{height:8px;flex:1;border-radius:8px;background:#d1dce9}.pseg.done{background:#57aaa5}.pseg.now{background:#5478df}
+.nav{display:flex;align-items:center;gap:10px}.nav button{min-width:106px;border:1px solid #d2e0ee;background:#fff;border-radius:12px;padding:11px 17px;color:#31577a;font-weight:800;font-size:15px}.nav .next{background:#335dd6;color:#fff;border-color:#335dd6}
+.footerMeta{display:flex;flex-direction:column;gap:4px}.footnotice{font-size:13px;color:#7489a1;font-weight:650}
+.numlabel{font-size:15px;color:#607d99;font-weight:800}
+/* Shared visualization elements. */
+.minihint{font-size:15px;color:#657f99;font-weight:730;text-align:center;margin:2px 0 9px}.statbig{font-size:48px;font-weight:950;color:#315ed4;letter-spacing:-2px}.statlabel{font-weight:800;color:#58748d;font-size:16px}.statside{display:flex;gap:22px;justify-content:center;align-items:center}.equation{font-size:25px;font-weight:850;text-align:center;padding:12px;border-radius:13px;background:#eff5ff;color:#234c8a}.accent{color:#2665d1}.teal{color:#008b80}.dim{opacity:.32}.highlight{background:#e3efff!important;color:#285cca!important}.muted{color:#8ea2b7}
+.cards{display:flex;gap:13px;align-items:stretch;justify-content:center}.datacard{background:#f6f9ff;border:1.5px solid #dee7f5;border-radius:16px;padding:18px;min-width:118px;flex:1;text-align:center}.datacard.active{border-color:#85a7ec;background:#e7efff;box-shadow:0 9px 15px #6e8cce22}.datacard .num{font-size:30px;font-weight:900;margin:6px 0;color:#355ecb}.datacard .tag{font-weight:850;color:#456989}.datacard .desc{font-size:13px;color:#7590a7;line-height:1.4}
+.flowline{display:flex;gap:14px;align-items:center;justify-content:center}.flowcard{min-height:185px;border-radius:20px;border:2px solid #dbe8f5;background:#f7faff;padding:25px 16px;text-align:center;flex:1}.flowcard.on{border-color:#7394ec;background:#e7f0ff;box-shadow:0 12px 25px #4e78e022}.flowcard .icon{font-size:42px;font-weight:900;color:#4569c9}.flowcard .name{font-size:20px;font-weight:900;margin:10px 0}.flowcard .sm{font-size:15px;line-height:1.6;color:#677e93}.flowarrow{font-size:34px;font-weight:900;color:#9fb2cc;flex:none}.bluepill{display:inline-flex;background:#e4efff;color:#315bca;padding:7px 14px;border-radius:100px;font-size:17px;font-weight:850;margin:3px}
+.arrrow{display:flex;align-items:stretch;gap:10px;justify-content:center;margin:6px 0}.arraycell{width:69px;text-align:center;border:1.6px solid #cedced;background:#f4f8ff;border-radius:12px;padding:15px 0 12px;font-weight:900;font-size:25px;color:#385a7c;position:relative}.arraycell .ix{position:absolute;top:-23px;left:0;right:0;font-size:13px;color:#7790aa;font-weight:750}.arraycell.hot{background:#e4f6f4;border-color:#36aca1;color:#008f83}.arraycell.pick{background:#e7edff;border-color:#496fd6;color:#315dd5;box-shadow:0 4px 14px #3a70ce21}.arr-caption{font-size:18px;text-align:center;color:#416280;font-weight:800;line-height:1.5;margin-top:17px}
+.datatable{border-collapse:separate;border-spacing:0;width:100%;font-size:15px;overflow:hidden;border-radius:12px;border:1px solid #dce6f1;table-layout:fixed}.datatable th{background:#eaf1fc;color:#355780;padding:7px 6px;font-weight:850;border-bottom:1px solid #d6e2f0}.datatable td{padding:6px 8px;text-align:center;color:#45627d;border-bottom:1px solid #ebf0f6;font-weight:650}.datatable tr:last-child td{border-bottom:0}.datatable .warn{color:#cf794a;background:#fff4e8;font-weight:900}.datatable .focused{background:#e0f4f2;color:#087d72}.datatable .inactive-row{opacity:.28}.datatable .keycol{color:#285bc0;background:#edf3ff;font-weight:900}
+.matrix{display:grid;gap:10px;justify-content:center;grid-template-columns:repeat(4,78px);margin:6px}.matrix .mx{width:78px;height:63px;border-radius:12px;border:1.5px solid #cfdded;background:#f5f9ff;font-size:24px;font-weight:900;color:#375a77;display:flex;align-items:center;justify-content:center}.matrix button.mx:hover{border-color:#6285d7}.matrix .mx.pick{background:#dce9ff;color:#2758bc;border-color:#769ae1}.matrix .mx.rowpick{background:#e7f8f5;border-color:#8bc5ba}.matrix .mx.colpick{border:2px solid #f3ba82}
+.chartSvg{width:100%;height:290px;overflow:visible}.compact-chart .chartSvg{height:190px}.mask-layout .arr-caption{margin-top:0;font-size:16px}.compact-chart .arraycell .ix{top:3px;right:auto;left:8px;font-size:11px}.compact-table .datatable td{padding:4px 8px}.compact-table .datatable th{padding:5px 6px}.chartSvg text{font-family:var(--font)}.legend{font-size:13px;color:#647f98;text-align:center;font-weight:760}
+.resultline{font-size:19px;font-weight:850;color:#315bca;text-align:center;margin-top:13px}
+.quizquestion{background:#f1f6ff;border-radius:15px;padding:13px 16px;font-size:20px;font-weight:900;margin-bottom:14px;line-height:1.5}.quizopts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.quizchoice{text-align:left;min-height:60px;font-size:17px;line-height:1.45}.quizchoice.wrong{border-color:#eeac96;background:#fff6f1}.quizchoice.right{border-color:#54a99a;background:#e5f7f2}.quizstatus{min-height:53px;font-size:15px;font-weight:800;line-height:1.5;color:#526e86;padding-top:10px}.quizexplain{background:#e6f7f1;padding:14px;border-radius:14px;font-size:16px;line-height:1.65;color:#226c62;font-weight:760}.quizhint{background:#fff2e5;padding:14px;border-radius:14px;font-size:16px;line-height:1.65;color:#956128;font-weight:700}
+.overveil{position:absolute;inset:0;background:#0f2e4cc7;z-index:50;display:flex;justify-content:center;align-items:center;padding:60px}.overlay{background:#fff;border-radius:24px;padding:28px 34px;width:1050px;max-height:580px;overflow:auto}.overlay h2{margin:0 0 14px}.overview{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.overview button{text-align:left;border:1px solid #dbe5f3;background:#f7faff;padding:9px 10px;border-radius:9px;font-size:13px;font-weight:750}.overview button:hover{background:#e6f0ff}.overview button.active{background:#dceaff;border-color:#8eabde}.helptext{font-size:20px;line-height:1.9}.closeoverlay{float:right;border:0;background:#e9f1fe;padding:7px 13px;border-radius:8px;color:#325abc;font-weight:800}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+#viz{padding:12px 20px 8px}
+.sidepanel{gap:8px;padding:19px 22px}
+.note{font-size:15.5px;line-height:1.55}
+.think{font-size:14.5px;line-height:1.5;min-height:59px;padding:10px 12px}
+.lead{font-size:18.5px;line-height:1.5}
+.panelhint{font-size:12px}
+.codewrap{max-height:193px}
+.codewrap pre{font-size:12.9px;line-height:1.5}
+.ctrlbtn{padding:8px 11px;font-size:14px}
+.slidergroup{width:91%}
+#controls:has(.slidergroup:nth-child(2)) .slidergroup{width:46%;gap:8px;font-size:13px}
+#controls:has(.slidergroup:nth-child(2)) .slidergroup label{width:77px}
+#controls:has(.slidergroup:nth-child(2)) .slidergroup output{width:57px;font-size:14px}
+.panellabel{font-size:13px}
+.viz-title{font-size:16px;color:#345b82;font-weight:850;text-align:center;margin-bottom:5px}
+.plot{width:100%;max-height:290px;height:285px;display:block}
+.plot text{font-family:var(--font)}
+.plot .gridline{stroke:#e8eef6;stroke-width:1}
+.plot .axis{stroke:#839ab5;stroke-width:1.7}
+.legendline{display:flex;justify-content:center;gap:23px;color:#547087;font-size:13px;font-weight:800;margin-top:1px}
+.legendline span::before{content:'';width:10px;height:10px;display:inline-block;margin-right:6px;border-radius:50%;background:var(--c);vertical-align:middle}
+.metricrow{display:flex;gap:11px;justify-content:space-evenly;width:100%;margin:7px 0}
+.metricbox{flex:1;padding:12px;border:1.5px solid #dce7f6;border-radius:15px;background:#f8fbff;text-align:center}
+.metricbox.on{border-color:#74a6d7;background:#e8f2ff}
+.metricbox .k{font-size:13px;color:#57758f;font-weight:800}
+.metricbox .v{font-size:30px;color:#2e5fc7;font-weight:900;letter-spacing:-.5px;margin:3px 0}
+.metricbox .d{font-size:12px;color:#6c879c;font-weight:680}
+.minortext{font-size:14px;color:#5a728b;font-weight:750;text-align:center;line-height:1.5;margin-top:7px}
+.strong{font-weight:900;color:#2266ce}
+.process{display:flex;gap:9px;justify-content:center;align-items:stretch}
+.process .stage{flex:1;border:2px solid #e0e9f5;border-radius:16px;background:#f9fbff;padding:19px 11px;text-align:center}
+.process .stage.on{background:#e5f0ff;border-color:#6f96e4}
+.process .big{font-size:27px;font-weight:900;color:#426bd4}
+.process .name{font-size:19px;font-weight:900;color:#284a70;margin:7px 0}
+.process .detail{font-size:13px;line-height:1.6;color:#72899d}
+.data-mini{border-collapse:collapse;width:100%;font-size:15px;border-radius:12px;overflow:hidden}
+.data-mini th{background:#e8f1ff;color:#365c83;padding:9px 6px}
+.data-mini td{padding:8px 5px;text-align:center;border-bottom:1px solid #e7edf7;color:#4c6883;font-weight:730}
+.data-mini tr:last-child td{border-bottom:0}
+.data-mini tr.tone{background:#eaf5ff}
+.data-mini td.on{background:#daeeff;color:#1e5da7;font-weight:900}
+.data-mini td.labelcol{background:#e8f8f3;color:#087d74;font-weight:900}
+.data-mini td.testcol{background:#fff2e6;color:#aa6932;font-weight:900}
+.indexdots{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin:17px 0 15px}
+.sampledot{border:1.5px solid #d6e3f2;border-radius:12px;background:#eaf2ff;text-align:center;padding:10px 4px;color:#315caa;font-weight:850}
+.sampledot.test{background:#fff0df;color:#a96f28;border-color:#eac18b}
+.sampledot.muted{opacity:.25}
+.sampledot .sm{font-size:11px;margin-top:6px;color:#667f97}
+.formula{font-size:25px;font-weight:900;text-align:center;color:#315dd1;background:#eaf2ff;border-radius:12px;padding:10px;margin-top:9px}
+.formula small{font-size:14px;color:#54728d}
+.barbox{display:grid;grid-template-columns:90px 1fr 63px;gap:9px;align-items:center;margin:10px 2px}
+.barbox .n{color:#496581;font-size:15px;font-weight:850;text-align:right}
+.barbox .track{height:27px;background:#eff3f8;border-radius:9px;overflow:hidden}
+.barbox .fill{height:100%;background:#5e83e5;border-radius:9px;transition:width .13s}
+.barbox .v{font-size:14px;font-weight:850;color:#2e557e}
+.sparkstats{text-align:center;font-weight:800;color:#2b5fba;font-size:18px;line-height:1.7}
+.status{padding:12px 13px;border-radius:12px;background:#e6f6f4;font-size:17px;font-weight:850;color:#136f6c;text-align:center;margin-top:10px}
+.wrapcodes .codewrap{margin-top:8px}
+.quizquestion{font-size:18px;padding:13px}
+.quizchoice{font-size:16px;min-height:65px}
+.quizstatus{margin-top:3px}
+@media(prefers-reduced-motion:reduce){.barbox .fill{transition:none}}
+.numstep{display:inline-flex;align-items:center;gap:8px;color:#466783;font-size:13px;font-weight:800}
+.numstep button{width:28px;height:27px;background:#eaf1ff;border:1px solid #a3b9ee;border-radius:8px;color:#365ed0;font-size:17px;font-weight:900;cursor:pointer}
+.numstep b{color:#305fc1;min-width:56px;text-align:center}
+
+.data-mini td{padding:5px 5px}
+.metricrow{margin:3px 0}
+.metricbox{padding:9px 8px}
+.metricbox .v{font-size:26px}
+.metricbox .k{font-size:12.5px}
+.indexdots{margin:11px 0}
+.sampledot{padding:8px 4px}
+#viz:has(.viz-title + .data-mini + .status) .data-mini td{padding:4px}
+#viz .status{margin-top:7px;padding:9px 11px;font-size:15px}
+#viz:has(.barbox) .barbox{margin:7px 2px}
+/* Third-week classification diagrams and controls. */
+.legendrow{display:flex;justify-content:center;gap:18px;align-items:center;font-size:14px;color:#506b86;font-weight:800;margin:3px 0 6px}
+.legenddot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.plot-title{font-weight:850;text-align:center;font-size:15px;color:#5b7690}
+.plotwrap{display:flex;flex-direction:column;align-items:stretch;justify-content:center;flex:1;min-height:0}
+.plotSvg{width:100%;height:282px;overflow:visible}
+.threecards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;width:100%}
+.metriccard{border:1.5px solid #d9e6f5;border-radius:15px;background:#f7faff;padding:14px 10px;text-align:center;min-width:0}
+.metriccard.active{border-color:#6992eb;background:#eaf1ff}
+.metriccard .value{font-weight:900;font-size:27px;color:#305dcc;margin:8px 0}
+.metriccard .tag{color:#56738e;font-size:15px;font-weight:850}
+.metriccard .small{color:#7290a8;font-size:12px;line-height:1.4}
+.rowstats{display:flex;align-items:stretch;gap:14px;justify-content:center;margin:12px 0}
+.rowstats .metriccard{flex:1}
+.cmwrap{display:flex;align-items:center;justify-content:center;gap:19px;width:100%;height:300px}
+.cmgrid{display:grid;grid-template-columns:100px repeat(3,102px);grid-template-rows:30px repeat(3,64px);gap:5px;align-items:stretch}
+.cmcorner,.cmhead,.cmrowhead{font-size:12px;font-weight:850;display:flex;align-items:center;justify-content:center;text-align:center;color:#53728d;line-height:1.25}
+.cmcell{border:1.5px solid #d6e3f1;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:950;color:#345578;background:#f5f9fe;cursor:pointer}
+.cmcell.good{background:#e7f7f3;border-color:#b4e3d9;color:#008777}.cmcell.bad{background:#fff3e7;border-color:#f6d3ac;color:#b66b22}
+.cmcell.selected{box-shadow:0 0 0 3px #7091e5!important}
+.cmnote{width:195px;font-size:14px;line-height:1.6;color:#56718b;font-weight:700}
+.cmnote strong{display:block;font-size:26px;color:#315ecb;margin:3px 0}
+.barrow{display:grid;grid-template-columns:150px 1fr 60px;align-items:center;gap:14px;margin:16px 0;font-size:15px;font-weight:850;color:#426580}
+.bartrack{height:23px;border-radius:7px;background:#edf2f8;overflow:hidden}.barfill{height:100%;border-radius:6px}
+.probtitle{font-size:16px;font-weight:850;text-align:center;margin-bottom:10px;color:#52738e}
+.probresult{background:#edf5ff;border:1px solid #d1e0f9;border-radius:13px;padding:13px 16px;text-align:center;color:#31558b;font-weight:800;font-size:18px;margin-top:12px}
+.flowsteps{display:flex;align-items:center;justify-content:center;gap:7px;width:100%}.flowsteps .step{flex:1;min-width:0;border-radius:15px;padding:16px 10px;text-align:center;background:#f1f7ff;border:2px solid #dbe6f4;color:#52708c}.flowsteps .step.active{background:#dfeaff;border-color:#6388e0;color:#294eae}.flowsteps .step .no{font-weight:950;font-size:25px}.flowsteps .step .name{font-weight:850;font-size:16px;margin:8px 0 3px}.flowsteps .arr{font-size:24px;color:#9eb1c5}
+.quizquestion{font-size:20px;line-height:1.5;font-weight:900;color:#233f61;text-align:center;margin-bottom:16px}
+.quizoptions{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.quizchoice{min-height:67px;padding:12px 14px;font-size:16px;font-weight:800;text-align:left;line-height:1.35}.quizchoice.correct{background:#ddf6e9;border-color:#48b795;color:#127b5e}.quizchoice.wrong{background:#fff0eb;border-color:#eeaa99;color:#ad513d}
+.quizindex{text-align:center;color:#6985a1;font-size:14px;font-weight:850;margin-top:9px}
+.quizexplain,.quizhint{border-radius:14px;background:#e7f7f2;padding:16px;color:#17785f;font-weight:750;line-height:1.65;font-size:16px}.quizhint{background:#fff5e8;color:#a46b2f}
+.mini-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid #dce6f2;border-radius:12px;overflow:hidden;font-size:14px;table-layout:fixed}
+.mini-table th{background:#eaf1fc;color:#3d6185;padding:8px 5px;text-align:center;border-bottom:1px solid #dce6f2}
+.mini-table td{text-align:center;border-bottom:1px solid #e9f0f7;padding:7px 5px;color:#46647d;font-weight:750}
+.mini-table tr:last-child td{border-bottom:none}.mini-table .hit{background:#dff4ef;color:#007a6a}
+.simpleformula{font-size:28px;font-weight:900;text-align:center;color:#2f5cc3;background:#eef4ff;padding:15px;border-radius:13px;margin:13px 0}
+.treeviz{width:100%;height:286px}.tagbox{padding:11px 15px;background:#edf4ff;border:1px solid #d8e5f5;border-radius:13px;font-weight:800;color:#3d5f83;text-align:center;margin:4px}
+.cmpair{display:flex;gap:12px;width:100%;align-items:stretch}.cmpair .metriccard{flex:1;padding:19px 13px}
+.smallscatter{width:100%;height:172px}.chartsrow{display:flex;gap:7px;align-items:stretch;width:100%}.chartsrow>div{flex:1;min-width:0}
+.codewrap pre{font-size:12.7px;line-height:1.51;padding-right:7px}.codewrap{max-height:192px}
+.sidepanel{gap:8px}.think{min-height:62px}
+.pillrow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px;margin:10px}
+.pill{background:#e9f1ff;border:1px solid #cfdef6;border-radius:50px;padding:8px 14px;font-size:16px;color:#3c5cb6;font-weight:850}
+.plottooltip{font-size:14px;font-weight:830;text-align:center;color:#506f8f;margin:4px}
+
+/* Prevent the last row, outcome card, and code from clipping. */
+.mini-table td{padding:5px 5px}.mini-table th{padding:6px 5px}
+.pillrow{margin:7px}.pill{padding:6px 11px}
+.plotSvg{height:272px}
+#viz:has(.probresult) .flowsteps .step{padding:6px 7px}
+#viz:has(.probresult) .flowsteps .step .no{font-size:21px}
+#viz:has(.probresult) .flowsteps .step .name{font-size:14px;margin:4px 0 0}
+#viz:has(.probresult) .barrow{margin:7px 0}
+#viz:has(.probresult) .probresult{padding:8px;margin-top:4px}
+
+/* LLM API visual teaching modules. */
+#viz{height:330px;padding:12px 16px 8px;justify-content:center}
+.vstack{height:100%;width:100%;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:10px;min-height:0}
+.vrow{display:flex;gap:9px;align-items:stretch;justify-content:center;min-width:0;width:100%}
+.vcard{background:#f5f9ff;border:1.5px solid #d9e5f3;border-radius:15px;padding:13px 10px;text-align:center;min-width:0;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:background .18s,border-color .18s}
+.vcard.active{border-color:#7199e2;background:#e7efff;box-shadow:0 8px 22px #6187d125}
+.vcard.risk.active{background:#fff0e9;border-color:#eab69c}
+.vlabel{color:#6687a3;font-size:12px;font-weight:850;letter-spacing:.7px}
+.vvalue{color:#315a84;font-size:19px;font-weight:950;line-height:1.25;overflow-wrap:anywhere}
+.vsmall{color:#66829b;font-size:12px;font-weight:700;line-height:1.35}
+.flowv .vcard{min-height:120px}
+.vizlabel{text-align:center;color:#567697;font-size:15px;font-weight:850;line-height:1.4}
+.vizlabel small{font-size:11px;color:#a06f4b;display:block;margin-top:4px}
+.mockwindow{border:1.5px solid #d8e5f4;border-radius:15px;overflow:hidden;background:#fff;width:100%;min-height:0;flex-shrink:0}
+.mocktop{display:flex;align-items:center;justify-content:space-between;padding:8px 13px;background:#eef3fb;border-bottom:1px solid #dce6f2;color:#5d7895;font-size:12px;font-weight:800;gap:6px}
+.mocktop strong{flex:1;text-align:center;color:#3a5c87}
+.mocktop .bulbs{font-size:11px;color:#e89d91;letter-spacing:2px}
+.mockbody{padding:14px 16px;display:flex;gap:6px;flex-direction:column;justify-content:center;min-height:55px}
+.mockline{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#687e92;font-size:14px;background:#f8fbff;border:1px solid #edf3fa;border-radius:9px;padding:9px 12px}
+.mockline strong{font-size:16px;color:#345b89;text-align:right;overflow-wrap:anywhere}
+.mockline.lineactive{background:#ebf4ff;border-color:#9cbbec}
+.biganswer{font-size:20px;line-height:1.55;font-weight:850;color:#345a80;text-align:center;min-height:32px}
+.biganswer.multiline{white-space:pre-line;text-align:left;padding-left:10px}
+.centerhint{font-size:13px;color:#627e9a;font-weight:750;text-align:center}
+.tokenstrip{display:flex;gap:10px;justify-content:center;margin:12px 0}
+.token{font-size:19px;font-weight:900;color:#b1bfcc;border:2px dashed #d8e3ed;background:#f7f9fc;border-radius:13px;padding:18px 14px}
+.token.revealed{color:#295dab;border:2px solid #6b9fe7;background:#e7efff}
+.token.curr{background:#cfe7ff;color:#2359ab}
+.caret{color:#2f77d2;animation:blink 1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+.prompttext{font-size:18px;line-height:1.55;font-weight:800;color:#3d6080;white-space:pre-line;overflow-wrap:anywhere}
+.hchip{padding:9px 11px;border:1.5px solid #dce6f4;border-radius:13px;background:#f5f9ff;font-size:14px;font-weight:850;color:#647d97;flex:1;text-align:center}
+.hchip.selected{background:#e8f3ff;color:#315fc2}
+.buildcols{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0;flex:1;max-height:288px}
+.conditionlist{display:flex;flex-direction:column;gap:7px;min-height:0}
+.cond{padding:9px 11px;border:1.5px solid #dfebf5;background:#f7faff;border-radius:11px;display:flex;flex-direction:column;gap:2px}
+.cond.active{border-color:#7fb7ab;background:#e8f7f3}
+.cond b{font-size:13px;color:#365c86}
+.cond small{font-size:11px;font-weight:650;color:#6a849a;line-height:1.3}
+.promptpreview{min-height:0;display:flex;flex-direction:column;background:#f0f7ff;border:1.5px solid #d9e7f7;border-radius:14px;padding:13px}
+.previewtitle{font-size:14px;font-weight:950;color:#2d6ca1;margin-bottom:8px}
+.previewbody{font-size:14px;line-height:1.45;font-weight:720;color:#41627d;flex:1;overflow:hidden}
+.previewbody p{margin:6px 0;border-top:1px dashed #d7e3f1}
+.previewfoot{font-size:12px;color:#537d9d;font-weight:800;text-align:right}
+.keymask{background:#252e42;color:#a8dbe5;font-family:Consolas,monospace;letter-spacing:3px;font-size:21px;border-radius:10px;text-align:center;padding:8px}
+.keyexplain{font-size:13px;font-weight:750;color:#617d95;text-align:center;line-height:1.4}
+.tag{display:inline-block;border-radius:9px;padding:6px 10px;font-size:13px;font-weight:950;text-align:center;width:max-content;align-self:center;max-width:100%}
+.tag.good{background:#e7f6ef;color:#107a5d;border:1px solid #a5dac7}
+.tag.bad{background:#fff1ed;color:#b85a45;border:1px solid #e3b6a7}
+.chatboard{display:flex;flex-direction:column;gap:8px;background:#f6f9ff;border:1px solid #e2eaf5;border-radius:17px;padding:12px;overflow:hidden;min-height:0}
+.bubble{max-width:85%;min-width:190px;padding:9px 12px;border:1.5px solid #dbe6f3;background:#fff;border-radius:14px;color:#58748f;font-size:15px;line-height:1.37;display:flex;flex-direction:column;gap:2px}
+.bubble b{font-size:12px;color:#65829b;font-weight:950}
+.bubble.user{align-self:flex-end;background:#edf2ff;border-color:#d4e1f4}
+.bubble.system{align-self:flex-start;background:#fff5e9;border-color:#f0d7ba}
+.bubble.model{align-self:flex-start;background:#e7f7f4;border-color:#bde2d8}
+.bubble.emph{border-color:#6294e8;box-shadow:0 0 0 2px #7fa5eb27;color:#285993}
+.chatboard.compact{gap:5px;padding:10px 15px}
+.chatboard.compact .bubble{max-width:91%;padding:5px 10px;gap:1px;font-size:13.3px;line-height:1.28}
+.chatboard.compact .bubble b{font-size:10.5px}
+.historyboard{display:flex;flex-direction:column;gap:6px}
+.histitem{display:flex;align-items:center;gap:12px;border:1.3px solid #dce7f4;border-radius:10px;padding:7px 12px;font-size:14px;color:#416380;background:#f4f9ff}
+.histitem b{font-size:12px;min-width:58px;color:#4d79a3}
+.histitem span:nth-child(2){flex:1;font-weight:750}
+.histitem.off{opacity:.42;background:#edf1f5}
+.histitem .tag{font-size:11px;padding:3px 8px;white-space:nowrap}
+.fieldtable{display:flex;flex-direction:column;gap:7px;background:#edf6ff;padding:11px;border:1px solid #dbe8f5;border-radius:13px}
+.fieldtable .mockline{background:white}
+.fieldtable .mockline strong{max-width:70%}
+.tokenbar{display:flex;width:100%;height:32px;overflow:hidden;border-radius:10px;background:#dae8f7}
+.tokenbar span{display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;white-space:nowrap}
+.tokenbar span:first-child{background:#80a8ed;color:#fff}.tokenbar span:last-child{background:#7bcac0;color:#184f58}
+.costline{text-align:center;font-size:36px;font-weight:950;color:#2463be}
+.costline small{font-size:14px;font-weight:800;color:#7b92a5}
+#controls{gap:7px;padding:9px 12px;align-content:center}
+#controls .choicebtn{font-size:14.2px;padding:9px 11px;min-height:38px;max-width:180px}
+#controls .resetbtn{border-color:#91cabb;color:#09766f;background:#f0fbf8}
+.sidepanel{gap:8px;padding:19px 21px}.lead{font-size:18px;line-height:1.46}.note{font-size:15px;line-height:1.55}.think{min-height:55px;font-size:14px;padding:10px 12px}
+.codewrap{max-height:196px}.codewrap pre{font-size:12.3px;line-height:1.43;padding:8px 6px 8px 7px}.line-no{margin-right:9px;min-width:18px}
+.quizframe{width:100%}.quizquestion{font-size:18px;margin:0 0 12px}.quizoptions{gap:9px}.quizchoice{min-height:57px;font-size:15px}
+.question-count{font-size:16px;font-weight:900;color:#66819e}
+@media(prefers-reduced-motion:reduce){.caret{animation:none}}
+
+.sidepanel.kind-practice,.sidepanel.kind-chat{padding:15px 19px;gap:6px}
+.sidepanel.kind-practice .lead,.sidepanel.kind-chat .lead{font-size:17px;line-height:1.38}
+.sidepanel.kind-practice .note,.sidepanel.kind-chat .note{font-size:14px;line-height:1.43}
+.sidepanel.kind-practice .think,.sidepanel.kind-chat .think{min-height:49px;font-size:13px;padding:9px 11px}
+</style></head><body><div id="deck" role="application" aria-label="LLM API 運用實務互動式投影片"></div><script>const slides=[{"section":1,"kind":"cover","title":"一句問題，怎麼透過 API 變成 AI 回答？","lead":"大型語言模型（Large Language Model, LLM）能處理自然語言；程式可以透過 API 傳送問題、接收回覆。","observe":"點選流程中的任一步，觀察使用者、Python、雲端模型各自負責什麼。","think":"為什麼程式不能只把一句話寫在畫面上，就說它已經請 AI 回答？","code":"","opts":["輸入問題","送出 API 請求","模型產生回覆","顯示結果"],"questions":[],"notes":[]},{"section":1,"kind":"rules","title":"一般程式和 LLM：處理文字的方法不同","lead":"一般條件判斷依照程式寫好的規則回答；LLM 可根據輸入與上下文生成文字，但也可能答錯。","observe":"切換同一個學習問題，對照固定規則與模型可能的回應方式。","think":"能產生自然回答，是否就代表每一句都符合事實？","code":"","opts":["固定規則","LLM 生成"],"questions":[],"notes":[]},{"section":1,"kind":"token","title":"模型回覆不是整篇一次寫好","lead":"文字會被切成 Token（詞元）；語言模型根據當前上下文逐步生成後續 Token。","observe":"依序揭示一則簡短回答的生成步驟。這是教學示意，不是實際 Gemini 的 Token 切法或輸出。","think":"如果前面已經寫出不同的字，接下來可能出現的字會一樣嗎？","code":"","opts":["輸入問題","生成第 1 段","生成第 2 段","生成第 3 段"],"questions":[],"notes":[]},{"section":1,"kind":"prompt","title":"同一個問題，Prompt 寫法會影響結果","lead":"Prompt（提示詞）是交給模型的任務需求。具體交代目的、限制與格式，比只有一句模糊要求更容易核對。","observe":"將「幫我介紹 Python」逐步改寫成可執行、可檢查的學習需求。","think":"哪一版能讓你清楚知道，怎樣才算回答成功？","code":"","opts":["模糊需求","說清楚對象與任務","加入長度與格式"],"questions":[],"notes":[]},{"section":1,"kind":"builder","title":"把提示詞拆成四個可觀察的條件","lead":"一個清楚的 Prompt 常包含任務、背景、限制與輸出格式；不必每次全部使用，但要確定必要資訊沒有漏掉。","observe":"點選條件加入提示詞，右側文字會立即組合成一份可用指令。","think":"若要求輸出兩個例子，卻沒有寫清楚範圍，會發生什麼問題？","code":"","opts":["任務","背景","限制","輸出格式"],"questions":[],"notes":[]},{"section":1,"kind":"request","title":"API：程式和遠端服務如何交換資料？","lead":"API（Application Programming Interface，應用程式介面）提供規定好的呼叫方式；請求（request）與回應（response）是兩個不同方向的資料。","observe":"切換四個階段，追蹤 prompt 從 Python 送出，到程式讀到 response 的過程。","think":"取得 response 後，應從哪裡讀取產生的文字？","code":"","opts":["組成輸入","發出請求","收到回應","讀取文字"],"questions":[],"notes":[]},{"section":1,"kind":"key","title":"API Key 是存取憑證，不是題目內容","lead":"API Key 用於驗證 API 存取權限。外洩可能被他人使用配額或造成費用，不能公開在 GitHub、投影片或前端程式碼。","observe":"切換三種放置方式，辨別哪一種較適合 Python 課堂練習。","think":"為什麼將 API Key 貼在公開網頁的 JavaScript 裡也不安全？","code":"","opts":["寫死在程式碼","環境變數","公開在前端"],"questions":[],"notes":[]},{"section":1,"kind":"roles","title":"System 和 User：指令有不同來源","lead":"System instruction 用來設定助理行為；User 提供當次任務。模型產生的回覆不是新的使用者命令。","observe":"點選訊息角色，觀看同一段對話的來源與作用。","think":"User 可以提出新問題，是否就代表 System 規則一定會被改寫？","code":"","opts":["System 指令","User 問題","Model 回覆"],"questions":[],"notes":[]},{"section":1,"kind":"safe","title":"把 API Key 放在自己的環境中","lead":"使用 Google AI Studio 建立／管理 Key，再以 GEMINI_API_KEY 環境變數提供給 Python。安裝套件、登入與實際呼叫需要連網。","observe":"依序觀察取得 Key、設定環境與啟動 Python 的流程。畫面只顯示遮蔽的假 Key。","think":"如果已將 Key 推上公開儲存庫，單純刪除最新一筆程式碼就夠了嗎？","code":"pip install -U google-genai","opts":["AI Studio 建立 Key","設定環境變數","Python 讀取憑證"],"questions":[],"notes":[]},{"section":1,"kind":"quiz","title":"第一節快速檢核","lead":"確認 LLM、Prompt、API request／response 與 API Key 的基本概念。","observe":"直接點選選項作答，答錯只提供提示；答對後才能查看完整解析。","think":"下一節將真正使用 Python 呼叫 Gemini API。","code":"","opts":[],"questions":[{"prompt":"下列哪一個最符合 API request 與 response 的差異？","choices":["兩個都是使用者輸入","request 是送出的資料，response 是收到的結果","response 就是 API Key","API 沒有資料傳送"],"ok":1,"hint":"想想資料是從 Python 往哪個方向流動。","why":"Python 將輸入與必要設定組成 request，API 服務處理後回傳 response，程式再讀取其中結果。"},{"prompt":"哪個地方較適合保存 Python 程式使用的 Gemini API Key？","choices":["公開 GitHub 程式碼","HTML 網頁原始碼","GEMINI_API_KEY 環境變數","投影片中的截圖"],"ok":2,"hint":"存取憑證應避免直接出現在會分享出去的檔案裡。","why":"對個人練習，環境變數是官方建議方式之一；正式服務可改用適當的祕密管理機制。"},{"prompt":"為什麼清楚的 Prompt 通常更容易取得可檢查的回答？","choices":["一定不會產生錯誤","模型可知道任務、限制與格式","可不需要網路","不會使用 Token"],"ok":1,"hint":"提示詞有沒有告訴模型「要做什麼、做到什麼程度」？","why":"具體的任務、背景、限制與格式能減少需求不明確的情況；但仍需核對模型回覆是否正確。"}],"notes":[]},{"section":2,"kind":"start2","title":"第二節：用 Python 取得第一則 AI 回覆","lead":"這一節使用 Google 官方 Python SDK `google-genai`。從建立 client，到送出內容與顯示回覆，流程只有幾個主要步驟。","observe":"依序切換「環境 → client → request → response」，注意哪個部分真正需要 API 金鑰。","think":"投影片的示範回覆是預先設計的；真正執行程式必須連線並有有效的 Key。","code":"from google import genai\nclient = genai.Client()","opts":["安裝與環境","建立 client","送出 request","取得 response"],"questions":[],"notes":[]},{"section":2,"kind":"setup","title":"先裝好 SDK，再確認 Key 不在程式裡","lead":"在 VS Code 或 Colab 的 Python 環境中安裝套件；將 GEMINI_API_KEY 設定為環境變數，不要將金鑰直接寫進可分享的 notebook。","observe":"切換 Windows／macOS／Colab 的概念步驟，檢查環境是否設定。","think":"為什麼設定完 Windows 環境變數後，可能需要重開終端機？","code":"pip install -U google-genai","opts":["安裝 SDK","Windows 設定","Colab Secrets"],"questions":[],"notes":[]},{"section":2,"kind":"client","title":"三段程式：client、input、response","lead":"`genai.Client()` 讀取環境中的認證設定；`interactions.create()` 送出輸入；`output_text` 取得文字回覆。","observe":"切換三段，主圖會指出哪個物件或欄位在那一步使用。","think":"為什麼 `print(reply)` 和 `print(reply.output_text)` 不是同一件事？","code":"from google import genai\nclient = genai.Client()\nreply = client.interactions.create(\n    model=\"gemini-3.8-flash\",\n    input=\"請用一句話解釋什麼是 API。\"\n)\nprint(reply.output_text)","opts":["建立 client","送出輸入","取出文字"],"questions":[],"notes":[]},{"section":2,"kind":"input","title":"換一個 input，送出的問題就不同","lead":"程式可以把不同的使用者文字放在 `input` 參數裡，而不是每次複製一段全新的程式。","observe":"切換三種問題，比較 request 的 input 欄位及教學模擬回覆。","think":"你會先用什麼方式確認使用者輸入不是空白？","code":"question = \"什麼是變數？\"\nreply = client.interactions.create(\n    model=\"gemini-3.8-flash\",\n    input=question\n)\nprint(reply.output_text)","opts":["問變數","問 list","問函式"],"questions":[],"notes":[]},{"section":2,"kind":"response","title":"response 不只有一整段顯示文字","lead":"SDK 回傳的是包含多種資訊的物件；初學時可先使用 `output_text` 讀取模型輸出，再由程式決定如何呈現。","observe":"點選「完整回應物件／抽出文字／顯示到畫面」，觀察資料在哪一步被取出。","think":"模型可能沒有產生可顯示文字；實作時為什麼需要處理這種情況？","code":"text = reply.output_text\nprint(text)","opts":["回應物件","讀取 output_text","顯示文字"],"questions":[],"notes":[]},{"section":2,"kind":"system","title":"讓回答風格固定：system_instruction","lead":"`system_instruction` 可以描述希望模型保持的風格，例如使用臺灣繁體中文、句子簡短。它是行為指引，不保證模型絕對正確。","observe":"切換三種系統指令，觀察同一個 user 問題的模擬回答呈現方式。","think":"如果 User 只寫「什麼是迴圈」，你會把固定回答風格放在哪裡？","code":"reply = client.interactions.create(\n    model=\"gemini-3.8-flash\",\n    system_instruction=\"請用臺灣繁體中文，兩句內回答。\",\n    input=\"什麼是迴圈？\"\n)","opts":["沒有指定","兩句話","條列重點"],"questions":[],"notes":[]},{"section":2,"kind":"format","title":"固定輸出格式，才能接著整理資料","lead":"如果下游程式需要固定欄位，Prompt 應清楚要求欄位名稱；缺少的資訊應標註「未提供」，不能自行捏造。","observe":"切換「自由回答」與「欄位輸出」，比較同一則社團通知被整理的結果。","think":"輸入沒有寫到地點時，系統應不應該自己填一個教室號碼？","code":"question = \"請列出活動、日期、地點；缺漏寫未提供。\"","opts":["自由摘要","指定欄位","缺少資訊處理"],"questions":[],"notes":[]},{"section":2,"kind":"errors","title":"API 呼叫失敗：先辨認哪個環節有問題","lead":"連線不穩、Key 無效、權限不足、配額限制或模型名稱錯誤，都可能使呼叫失敗；應查看實際錯誤訊息再處理。","observe":"切換四種故障情境，查看錯誤發生的位置與合理的下一步。","think":"為什麼不應無限制地重試失敗的呼叫？","code":"try:\n    reply = client.interactions.create(\n        model=\"gemini-3.8-flash\",\n        input=\"你好\"\n    )\nexcept Exception as err:\n    print(type(err).__name__)","opts":["Key／權限","配額或速率","模型名稱","網路連線"],"questions":[],"notes":[]},{"section":2,"kind":"practice","title":"實作小任務：做一個單次問答程式","lead":"把問題設在 `question`，呼叫 Gemini API 後印出回覆。先測一個簡單問題，再替換成自己的課堂題目。","observe":"切換輸入問題與回覆區，確認程式的每一步；回覆內容為教學模擬，不會發送到 Google。","think":"怎麼驗證回覆不是只看起來流暢，而是真的回答了原問題？","code":"from google import genai\nclient = genai.Client()\nquestion = \"請用兩句話解釋 list。\"\nreply = client.interactions.create(\n    model=\"gemini-3.8-flash\",\n    input=question\n)\nprint(reply.output_text)","opts":["輸入問題","送出請求","閱讀回覆","核對結果"],"questions":[],"notes":[]},{"section":2,"kind":"quiz","title":"第二節快速檢核","lead":"確認 Python SDK 的主要元件、system instruction、回覆處理與錯誤排查。","observe":"先作答，再根據提示或完整解析修正理解。","think":"下一節要把單次呼叫延伸為能接續聊天的助理。","code":"","opts":[],"questions":[{"prompt":"`client.interactions.create()` 在這份程式中主要負責什麼？","choices":["建立 Python 變數型態","向 Gemini API 送出請求","安裝套件","刪除金鑰"],"ok":1,"hint":"觀察呼叫前需要 client，呼叫後才有 reply。","why":"`interactions.create()` 送出模型、輸入等設定並取得互動結果；讀取 `reply.output_text` 可取回生成的文字。"},{"prompt":"想設定所有回答都使用臺灣繁體中文，應優先放在哪裡？","choices":["system_instruction","print() 的括號裡","API Key 的文字裡","檔案副檔名"],"ok":0,"hint":"這項要求是每一輪都會用到的助理行為設定。","why":"`system_instruction` 用來傳達較固定的行為規則；User 的 input 則放該次具體問題。"},{"prompt":"若 API 出現配額或速率限制，較合理的處理方式是？","choices":["一直無限重試","把 API Key 公開求助","確認限制與用量，稍後依規則重試","假裝 API 已成功"],"ok":2,"hint":"應先看失敗原因，而不是忽略錯誤訊息。","why":"配額與速率限制需要查看帳戶限制、用量與服務回覆；重試必須有限制，避免更多不必要請求。"}],"notes":[]},{"section":3,"kind":"start3","title":"第三節：把單次問答接成一段對話","lead":"同一個問題若需要前文脈絡，程式就要將先前資訊提供給模型，或使用可延續的互動工作階段。","observe":"切換「只有最新訊息」與「有前文」，比較模型能看到的內容。","think":"沒有上下文時，「它有哪些用法？」裡的「它」究竟指什麼？","code":"","opts":["沒有前文","帶入前文"],"questions":[],"notes":[]},{"section":3,"kind":"history","title":"哪些對話需要保留？哪些可以省略？","lead":"聊天紀錄不是越長越好。用簡短的對話示範保留與當前任務有關的資訊；上下文仍可能受到 Token 限制。","observe":"切換只保留最新問題、保留關鍵前文、保留全部訊息，觀察可理解程度與資料量。","think":"假如討論的是 Python list，哪些早期訊息其實可以不用再傳？","code":"","opts":["只保留最新","保留必要前文","保留全部"],"questions":[],"notes":[]},{"section":3,"kind":"chat","title":"使用 Chat 工作階段管理多輪對話","lead":"SDK 的 `client.chats.create()` 可建立對話工作階段；之後 `send_message()` 會延續此物件中的聊天脈絡。","observe":"切換第 1、2、3 輪，觀察上一輪內容如何讓後續追問有意義。","think":"如果重新啟動程式，原本 Python 記憶體中的 chat 物件還會自動存在嗎？","code":"chat = client.chats.create(\n    model=\"gemini-3.8-flash\"\n)\nreply = chat.send_message(\"我在學 list。\")\nprint(reply.text)\nreply = chat.send_message(\"請給兩例。\")\nprint(reply.text)","opts":["第 1 輪","第 2 輪","第 3 輪"],"questions":[],"notes":[]},{"section":3,"kind":"tone","title":"同一段對話，可以設定不同回答風格","lead":"回答風格可以在 system instruction 中指定；例如簡潔、條列或逐步解釋。變更風格不等於改變事實答案。","observe":"選擇不同風格，比較同一題目在畫面上的呈現差異。","think":"如果想讓助理保持「先舉例再解釋」，應如何設定？","code":"","opts":["簡潔回答","生活例子","三步驟解釋"],"questions":[],"notes":[]},{"section":3,"kind":"fixed","title":"做成可整理的固定欄位輸出","lead":"實用的回覆不只要好讀，還要方便程式處理。設計欄位、空值規則、順序，減少不同回答格式難以接續的問題。","observe":"點選社團活動通知，觀察輸入原文與固定欄位的對應；沒有給的地點一定是「未提供」。","think":"如果欄位名稱有時叫「日期」、有時叫「時間」，後續程式會發生什麼問題？","code":"question = \"輸出活動、日期、地點；缺漏寫未提供。\"","opts":["通知 A","通知 B","原文缺漏"],"questions":[],"notes":[]},{"section":3,"kind":"verify","title":"AI 可能說得流暢，卻沒有可靠根據","lead":"生成式 AI 可能產生不存在或無法查證的資訊（常稱 Hallucination，幻覺）。重要內容要對照原始資料或可靠來源。","observe":"切換三種候選回答，直接標出哪些句子有證據、哪些是額外猜測。","think":"模型若補上一個看似合理的教室地點，這能直接當成真實公告嗎？","code":"","opts":["有資料支持","加入未提供資訊","缺少來源"],"questions":[],"notes":[]},{"section":3,"kind":"cost","title":"API 使用量：輸入與輸出都可能計費","lead":"Token 是常見計量單位之一。費用與速率限制依模型、服務層級及當時價格不同；下方用假設單價示範計算，不代表官方費率。","observe":"切換少量、一般、大量呼叫，比較輸入／輸出 Token 數與教學假設費用。","think":"如果把每次對話的所有歷史都重複送出，輸入用量可能如何改變？","code":"","opts":["10 次短問答","100 次問答","1,000 次長問答"],"questions":[],"notes":[]},{"section":3,"kind":"privacy","title":"要送出 Prompt 前，先看資料能不能分享","lead":"呼叫雲端 API 代表資料會傳送到服務端。不要直接傳送密碼、身分證字號、真實同學名單或不該分享的內容。","observe":"切換三類資訊，判斷是否適合直接送到雲端 API。","think":"免費與付費層級的資料使用條款可能不同，正式使用前應查看目前條款。","code":"","opts":["公開練習題","含個資的表格","帳號密碼／Key"],"questions":[],"notes":[]},{"section":3,"kind":"challenge","title":"小專題：設計一個 Python 學習助理","lead":"用一個有前文的問答流程，設定語言、長度與安全規則；測試回答是否符合需求，並記下哪裡需要人工核對。","observe":"切換三個測試案例，觀察助理應保留的脈絡與檢查項目。","think":"完成程式不等於完成驗證：你會用什麼題目找出它可能的弱點？","code":"from google import genai\nclient = genai.Client()\nchat = client.chats.create(\n    model=\"gemini-3.8-flash\"\n)\nprint(chat.send_message(\"解釋 list。\").text)\nprint(chat.send_message(\"再舉一例。\").text)","opts":["基本問答","追問前文","檢查未知資訊"],"questions":[],"notes":[]},{"section":3,"kind":"quiz","title":"第三節快速檢核","lead":"確認對話脈絡、固定輸出格式、資訊查證、Token 成本與資料隱私。","observe":"完成三題後，可以回到任意頁操作或使用 Python 自己實作。","think":"檢查自己的程式：是否有保護 Key、追蹤對話與核對 AI 回答？","code":"","opts":[],"questions":[{"prompt":"為什麼多輪對話有時需要保留前文？","choices":["因為每段文字都必須永久保存","讓「它」「剛才」等追問有可理解的上下文","讓模型永遠不會犯錯","可以省去所有 API 請求"],"ok":1,"hint":"想像只有看到「它有哪些用法？」卻不知道「它」是什麼。","why":"模型若未取得前文，就可能無法判定代名詞指涉；保存相關的上下文才能幫助理解追問。"},{"prompt":"整理活動公告時，原文沒有提供地點，怎麼處理較妥當？","choices":["自己猜一間教室","標註「未提供」並等待查證","把日期當作地點","假設模型會自動知道"],"ok":1,"hint":"固定欄位不表示每一格都必須自行填滿。","why":"來源沒有提供的資料應保留缺漏或明寫「未提供」，不要讓模型產生看似完整但無來源的內容。"},{"prompt":"對 API 的費用與資料隱私，下列何者較正確？","choices":["API 永遠免費且完全不記錄資料","把 API Key 貼在 HTML 沒關係","依當時官方費率與條款檢查，用量及敏感資料都要留意","Token 數跟成本絕對無關"],"ok":2,"hint":"費用、配額、條款會因方案與時間調整。","why":"應核對目前官方模型費率、免費／付費方案條款與配額，妥善保護金鑰並避免傳送不必要的敏感資訊。"}],"notes":[]}];
+const root = document.getElementById('deck');
+let page = 0;
+let overlay = '';
+const states = {};
+const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const current = () => states[page] || (states[page] = {mode:0, question:0, answer:-1, correct:false, wrong:false, chosen:[]});
+const chip = (text, active=false, extra='') => `<div class="hchip ${active?'selected':''} ${extra}">${esc(text)}</div>`;
+const box = (title, value, sub='', active=false, extra='') => `<div class="vcard ${active?'active':''} ${extra}"><div class="vlabel">${esc(title)}</div><div class="vvalue">${esc(value)}</div>${sub?`<div class="vsmall">${esc(sub)}</div>`:''}</div>`;
+const arrow = () => `<span class="arricon">→</span>`;
+const group = (items, cls='') => `<div class="vrow ${cls}">${items.join('')}</div>`;
+const stack = (...items) => `<div class="vstack">${items.join('')}</div>`;
+const heading = (text, small='') => `<div class="vizlabel">${esc(text)} ${small?`<small>${esc(small)}</small>`:''}</div>`;
+const screen = (title, body, sub='') => `<div class="mockwindow"><div class="mocktop"><span class="bulbs">● ● ●</span><strong>${esc(title)}</strong><span>${esc(sub)}</span></div><div class="mockbody">${body}</div></div>`;
+const line = (label, value, active=false) => `<div class="mockline ${active?'lineactive':''}"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`;
+const bubble = (who,text,active=false,type='user')=>`<div class="bubble ${type} ${active?'emph':''}"><b>${esc(who)}</b><span>${esc(text)}</span></div>`;
+const tag = (t,good=true)=>`<span class="tag ${good?'good':'bad'}">${esc(t)}</span>`;
+const flow = (names,m,sub=[])=>stack(group(names.map((t,i)=>box(`0${i+1}`,t,sub[i]||'',i===m)), 'flowv'),`<div class="centerhint">${esc(['依序選擇一個階段，觀察目前要處理的資訊。'][0])}</div>`);
+const prompts = [
+ '幫我介紹 Python。',
+ '請向剛學程式的人介紹 Python 的 list，先說明用途，再舉一個例子。',
+ '請用臺灣繁體中文介紹 Python list。分成「用途」與「範例」兩段，每段不超過兩句。'
+];
+const components = [
+ ['任務','解釋 Python list 的用途。'],
+ ['背景','對象是剛學 Python 的人。'],
+ ['限制','避免艱深術語，全文不超過 80 字。'],
+ ['輸出格式','請分成「概念」與「範例」兩段。']
+];
+const mockAnswers = ['變數可用來保存一個值，之後可以透過名稱再次使用。','list 能依照順序保存多筆資料，例如 [3, 5, 8]。','函式可以把經常使用的操作整理成可重複呼叫的程式。'];
+const activity = [
+ {raw:'週五下午舉辦程式社體驗，請大家報名。', values:['程式社體驗','週五下午','未提供']},
+ {raw:'11 月 6 日在圖書館舉辦閱讀分享會。', values:['閱讀分享會','11 月 6 日','圖書館']},
+ {raw:'歡迎參加校園活動，名額有限。', values:['校園活動','未提供','未提供']}
+];
+function quizVisual(s,z){
+ const q=s.questions[z.question];
+ return `<div class="quizframe"><div class="quizquestion">${esc(q.prompt)}</div><div class="quizoptions">${q.choices.map((v,i)=>`<button class="quizchoice ${z.answer===i?(z.correct?'correct':'wrong'):''}" data-answer="${i}" ${z.correct?'disabled':''}>${'ABCD'[i]}　${esc(v)}</button>`).join('')}</div><div class="quizindex">第 ${z.question+1} 題 / 共 3 題</div></div>`;
+}
+function visual(s,z){
+ const m=z.mode;
+ switch(s.kind){
+ case 'cover':return stack(heading('一個問題的完整旅程'),group([
+ box('輸入','什麼是 API？','使用者問題',m===0),box('Python','request','封裝模型與輸入',m===1),box('雲端模型','產生文字','服務端處理',m===2),box('顯示','response','讀取回覆',m===3)
+ ],'flowv'),screen('目前正在處理的資料',line(['user','model','request','result'][m],['什麼是 API？','gemini-3.8-flash','input + model','API 是程式交換資料的介面。'][m],true),'教學流程示意，沒有實際連線'));
+ case 'rules':return stack(heading('同一個問題：「可以用 Python 做什麼？」'),group([
+ box('規則式程式','if / else','只有預先寫好的條件分支',m===0),box('大型語言模型','根據上下文生成','可產生不同敘述，仍需核對',m===1)
+ ]),screen(m?'LLM 可能回覆（模擬）':'固定規則的輸出',`<div class="biganswer">${m?'Python 可以處理資料、建立網頁或自動化重複工作。':'問題不符合預先列出的關鍵字 → 無法回答'}</div>`));
+ case 'token':{const generated=['','Python','Python 可以','Python 可以協助處理資料。'];return stack(heading('輸入：請用一句話解釋 Python 的用途'),`<div class="tokenstrip">${['Python','可以','協助','處理資料。'].map((w,i)=>`<span class="token ${(i<m||m===3)?'revealed':''} ${i===m-1?'curr':''}">${esc(w)}</span>`).join('')}</div>`,screen('逐步生成的示意文字',`<div class="biganswer">${esc(generated[m])}${m<4?'<span class="caret">▌</span>':''}</div>`,'詞元與產生順序僅供教學示意'))};
+ case 'prompt':return stack(heading('模糊需求 → 具體可核對的 Prompt'),screen('這次送出的 Prompt',`<div class="prompttext">${esc(prompts[m])}</div>`),group(['任務明確','對象清楚','格式可檢查'].map((t,i)=>box(t,i<=m?'✓':'—',i<=m?'已提供':'尚未指定',i<=m))));
+ case 'builder':{const chosen=z.chosen;const lines=components.filter((_,i)=>chosen.includes(i)).map(x=>x[1]);return stack(heading('自行組合一份學習提示詞'),`<div class="buildcols"><div class="conditionlist">${components.map(([a,b],i)=>`<div class="cond ${chosen.includes(i)?'active':''}"><b>${chosen.includes(i)?'✓':'＋'} ${esc(a)}</b><small>${esc(b)}</small></div>`).join('')}</div><div class="promptpreview"><div class="previewtitle">組合後的 Prompt</div><div class="previewbody">${lines.length?lines.map(esc).join('<p></p>'):'請從下方選擇條件，開始建立 Prompt。'}</div><div class="previewfoot">已選 ${chosen.length}／4 個條件</div></div></div>`)};
+ case 'request':return stack(heading('Python 和 Gemini API 的 request／response'),group(['準備 input','呼叫 API','收到 reply','取出文字'].map((t,i)=>box(['01','02','03','04'][i],t,'',i===m)),'flowv'),screen('資料方向',m<2?line('Python → API',m?'model + input':'question = "你好"',true):line('API → Python',m===2?'reply（回應物件）':'reply.output_text',true)));
+ case 'key':{const labels=['不建議','建議','不可公開'];return stack(heading('金鑰只能由自己的安全環境取得'),group([
+ box('直接寫在程式',m===0?'高風險':'風險','很容易被複製或提交到 Git',m===0,'risk'),
+ box('環境變數',m===1?'較安全':'較安全','Python 讀取 GEMINI_API_KEY',m===1),
+ box('公開前端',m===2?'高風險':'風險','任何人可查看瀏覽器原始碼',m===2,'risk')
+ ]),screen('示意金鑰（不是真實憑證）',`<div class="keymask">●●●● ●●●● ●●●● ●●●●</div>${tag(labels[m],m===1)}<span class="keyexplain">${esc(['程式碼分享後，其他人可能看到金鑰。','程式碼只負責讀取環境變數，不內嵌金鑰內容。','前端檔案可被使用者查看，不能保護祕密。'][m])}</span>`))};
+ case 'roles':{const roles=[['System','請用臺灣繁體中文，句子簡短。','system'],['User','請解釋什麼是迴圈。','user'],['Model','迴圈能讓程式重複執行指定工作。','model']];return stack(heading('同一段對話的三種來源'),`<div class="chatboard">${roles.map((x,i)=>bubble(x[0],x[1],i===m,x[2])).join('')}</div>`,`<div class="centerhint">目前選取：${['設定助理的持續性指引','提供當次要做的事','呈現模型產生的結果'][m]}</div>`)};
+ case 'safe':return stack(heading('建立 Key → 保存在環境 → Python 執行'),group([
+ box('Google AI Studio','建立／管理 Key','官方後台',m===0),box('本機環境','GEMINI_API_KEY','不進 Git',m===1),box('Python','genai.Client()','以 SDK 讀取',m===2)
+ ],'flowv'),screen('現在執行的階段',line(['建立存取憑證','設定私密環境變數','建立 API Client'][m],['請勿公開或傳給他人','只由自己的電腦／Colab 保存','程式使用已設定的認證'][m],true)));
+ case 'start2':return stack(heading('Python 呼叫 Gemini API 的四個動作'),group(['安裝套件','建立 client','送出 input','取得 output_text'].map((n,i)=>box(`${i+1}`,n,['pip 安裝','認證','Gemini API','print 文字'][i],i===m)),'flowv'),screen('程式流程',line(['準備','Client','Request','Response'][m],['google-genai','genai.Client()','interactions.create(...)','reply.output_text'][m],true)));
+ case 'setup':{const details=[['安裝 SDK','pip install -U google-genai','讓 Python 能匯入 google.genai'],['Windows 環境','GEMINI_API_KEY（使用者環境變數）','設定後重新開啟 VS Code 終端機'],['Google Colab','Secrets → GEMINI_API_KEY','先取出 Secret，再交給 Python 環境']];return stack(heading('環境準備與金鑰保護'),group(details.map((a,i)=>box(a[0],['套件','Windows','Colab'][i],a[2],i===m))),screen('目前步驟',line(details[m][0],details[m][1],true),'不要將真實 Key 寫在共用 notebook'));}
+ case 'client':return stack(heading('一個 Client、一個 request、一個 response'),group([
+ box('Client','client','載入存取設定',m===0),box('API request','reply','送出問題',m===1),box('文字輸出','output_text','給 print 使用',m===2)
+ ],'flowv'),screen('輸入與結果',line(m<2?'輸入':'輸出',m===2?'API 是讓程式互相交換資料的介面。':'請用一句話解釋什麼是 API。',true),'右側是正式 Python 程式；此處回覆為教學模擬'));
+ case 'input':return stack(heading('維持同一段程式，只改變 question'),screen('送出的問題',`<div class="prompttext">${esc(['什麼是變數？','什麼是 list？','什麼是函式？'][m])}</div>`),screen('模擬回覆',`<div class="biganswer">${esc(mockAnswers[m])}</div>`,'未呼叫真實 Gemini API'));
+ case 'response':return stack(heading('回應物件 → 文字欄位 → 顯示'),group(['reply','reply.output_text','print(text)'].map((t,i)=>box(`0${i+1}`,t,['API 回傳結果','選取文字','顯示給使用者'][i],i===m))),screen('目前可看到',line(m===0?'資料型態':m===1?'文字內容':'終端機畫面',m===0?'Interaction 物件':m===1?'一段生成文字':'API 是程式交換資料的介面。',true)));
+ case 'system':{const answers=['迴圈是重複執行程式的控制結構。','迴圈能讓一段工作重複執行。','• 重複指定動作\n• 設定停止條件\n• 檢查執行結果'];return stack(heading('相同 User 問題，不同 system_instruction'),bubble('User','什麼是迴圈？',true),screen('模擬模型回覆',`<div class="biganswer multiline">${esc(answers[m])}</div>`),chip(['未額外指定風格','簡短的兩句話','條列三個重點'][m],true));}
+ case 'format':{const vals=activity[m===2?0:1].values;return stack(heading('來源沒有提供，就寫「未提供」'),screen('活動公告原文',`<div class="prompttext">${esc(activity[m===2?0:1].raw)}</div>`),m===0?screen('自由摘要',`<div class="biganswer">活動與閱讀分享有關，歡迎參與。</div>`):`<div class="fieldtable">${['活動','日期','地點'].map((t,i)=>line(t,m===2&&i===2?'未提供':vals[i],i===2&&m===2)).join('')}</div>`)};
+ case 'errors':{const errors=[['驗證／權限','檢查 Key 是否有效，以及專案是否有存取權。'],['速率／配額','查詢使用量、限制及重試時間，避免無限重試。'],['找不到模型','確認 model ID 是否仍可用，依文件更新。'],['連線失敗','檢查網路與服務狀態，再決定是否重試。']];return stack(heading('先看錯誤原因，再決定下一步'),group(errors.map((x,i)=>box('情境 '+(i+1),x[0],'',i===m)),'flowv'),screen('合理處置',`<div class="biganswer">${esc(errors[m][1])}</div>`,'錯誤類型僅供觀念教學，不是實際 API 回應'));}
+ case 'practice':return stack(heading('完整流程中的四個觀察點'),group(['question','request','output_text','核對需求'].map((t,i)=>box('0'+(i+1),t,'',i===m)),'flowv'),screen('目前階段',m===0?line('問題','請用兩句話解釋 list。',true):m===1?line('請求','model + input',true):m===2?line('模擬回覆','list 可以保存多個值，並依序取出。',true):line('人工檢查','格式、內容、是否答對原題',true)));
+ case 'start3':return stack(heading('同一句「它還能做什麼？」為什麼難回答'),`<div class="chatboard">${m?bubble('User','我正在學習 Python list。',true):''}${bubble('User','它還能做什麼？',true)}${bubble('助理（模擬）',m?'list 可以新增、刪除與排序元素。':'「它」是指哪個東西？請補充前文。',true,'model')}</div>`,chip(m?'有前文：可以指向 list':'沒有前文：指涉不明',true));
+ case 'history':{const lines=[['User','今天天氣如何？'],['User','我在學習 Python list。'],['Model','list 可以儲存多個值。'],['User','請再給我一個例子。']];const visible=m===0?[3]:m===1?[1,2,3]:[0,1,2,3];return stack(heading('保留與目前學習主題有關的前文'),`<div class="historyboard">${lines.map((a,i)=>`<div class="histitem ${visible.includes(i)?'on':'off'}"><b>${esc(a[0])}</b><span>${esc(a[1])}</span>${visible.includes(i)?tag('保留',true):tag('不傳送',false)}</div>`).join('')}</div>`,`<div class="centerhint">本次示意保留 ${visible.length}／4 則訊息；實際 Token 用量依模型 tokenizer 決定</div>`)};
+ case 'chat':{const convo=[['User','我正在學 Python list。'],['Model','list 是可以儲存多個元素的資料結構。'],['User','請給我兩個例子。'],['Model','例如 [2, 4] 與 ["a", "b"]。'],['User','第二個例子怎麼取出第一筆？'],['Model','可以使用 data[0]。']];return stack(heading('上一輪的問題與回覆成為下一輪的脈絡'),`<div class="chatboard compact">${convo.slice(0,2*m+2).map((x,i)=>bubble(x[0],x[1],i>=2*m,x[0]==='User'?'user':'model')).join('')}</div>`,`<div class="centerhint">已顯示 ${m+1} 輪完整對話（教學模擬）</div>`)};
+ case 'tone':{const samples=['list 能把多筆資料放在同一個變數中。','就像一個有編號的置物櫃，你可以依序放入或取出資料。','① 建立 list　② 用索引取值　③ 用 append() 新增元素'];return stack(heading('使用同一個問題比較三種回答風格'),bubble('User','請說明 Python list 的用途。',true),screen('模擬回覆',`<div class="biganswer">${esc(samples[m])}</div>`),chip(['簡潔定義','生活化比喻','依步驟說明'][m],true));}
+ case 'fixed':{const a=activity[m];return stack(heading('先讀公告，再依相同欄位輸出'),screen('原始公告',`<div class="prompttext">${esc(a.raw)}</div>`),`<div class="fieldtable">${['活動','日期','地點'].map((k,i)=>line(k,a.values[i],a.values[i]==='未提供')).join('')}</div>`)};
+ case 'verify':{const cases=[['資料：「週五下午舉辦程式社體驗，請大家報名。」','答案：「活動是程式社體驗，時間是週五下午。」',true],['資料：「週五下午舉辦程式社體驗，請大家報名。」','答案：「地點是三樓電腦教室。」',false],['資料：「歡迎參加校園活動。」','答案：「這場活動有 80 個名額。」',false]];const [source,answer,ok]=cases[m];return stack(heading('來源與回答逐句對照'),screen('可驗證的輸入內容',`<div class="prompttext">${esc(source)}</div>`),screen('模型候選回答（模擬）',`<div class="biganswer">${esc(answer)}</div>`),tag(ok?'有原文支持':'原文沒有提供，必須查證',ok));}
+ case 'cost':{const examples=[{n:10,inp:120,out:80},{n:100,inp:500,out:250},{n:1000,inp:3000,out:1000}];const x=examples[m],a=x.n*x.inp,b=x.n*x.out,price=a/1e6*.2+b/1e6*1.5;const percent=Math.max(4,Math.round(a/(a+b)*100));return stack(heading('假設費率：輸入 $0.20／100 萬 Token、輸出 $1.50／100 萬 Token','僅示範運算，不是官方報價'),group([box('呼叫次數',x.n.toLocaleString()+' 次'),box('輸入總量',a.toLocaleString()+' tokens'),box('輸出總量',b.toLocaleString()+' tokens')]),`<div class="tokenbar"><span style="width:${percent}%">輸入</span><span style="width:${100-percent}%">輸出</span></div>`,screen('教學假設費用',`<div class="costline">$${price.toFixed(4)} <small>USD（模擬）</small></div>`));}
+ case 'privacy':{const txt=[['Python list 的練習題','可以作為一般學習材料，但仍要留意資料授權。',true],['含姓名與電話的名單','先去識別化，確認有適當依據才使用。',false],['密碼、API Key','不應放在 prompt 或公開共用檔案。',false]];return stack(heading('送出前先分類：資料適不適合傳送'),group(txt.map((x,i)=>box('資料 '+(i+1),x[0],'',m===i))),screen('建議做法',`<div class="biganswer">${esc(txt[m][1])}</div>`),tag(txt[m][2]?'一般可用的練習內容':'有隱私／安全風險',txt[m][2]));}
+ case 'challenge':{const cases=[['基本問答','用臺灣繁體中文說明 list。','確認主題是否正確'],['追問前文','再給我一個程式範例。','確認「再」指向 list'],['未知資訊','這個社團活動的地點？','若無來源，回答未提供']];return stack(heading('從任務到驗證，完成三個測試'),group(cases.map((x,i)=>box('測試 '+(i+1),x[0],'',m===i))),screen('測試條件與檢查',line('送出題目',cases[m][1],true)+line('人工檢查',cases[m][2])));}
+ case 'quiz':return quizVisual(s,z);
+ default:return stack(heading('觀察主要概念'),box(s.title,s.observe));
+ }
+}
+function codeFor(s,z){
+ const m=z.mode;
+ if(s.kind==='safe'&&m===2)return 'import os\nfrom google import genai\n\nprint(bool(os.getenv("GEMINI_API_KEY")))\nclient = genai.Client()';
+ if(s.kind==='setup'&&m===1)return 'import os\nprint(bool(os.getenv("GEMINI_API_KEY")))';
+ if(s.kind==='setup'&&m===2)return 'from google.colab import userdata\nimport os\n\nos.environ["GEMINI_API_KEY"] = userdata.get("GEMINI_API_KEY")';
+ if(s.kind==='input')return `question = "${['什麼是變數？','什麼是 list？','什麼是函式？'][m]}"\nreply = client.interactions.create(\n    model="gemini-3.8-flash",\n    input=question\n)\nprint(reply.output_text)`;
+ if(s.kind==='system')return m===0
+  ? 'reply = client.interactions.create(\n    model="gemini-3.8-flash",\n    input="什麼是迴圈？"\n)'
+  : `reply = client.interactions.create(
+    model="gemini-3.8-flash",
+    system_instruction="${['', '請用臺灣繁體中文，兩句內回答。', '請用臺灣繁體中文，條列三個重點。'][m]}",
+    input="什麼是迴圈？"
+)`;
+ return s.code;
+}
+function syntax(src){
+ const keys=new Set(['import','from','as','if','else','elif','for','in','try','except','print','return','def','not','True','False','None']);
+ const calls=new Set(['print','Client','create','getenv','send_message','get','str','bool','chat']);
+ return (src.match(/(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b\d+(?:\.\d+)?\b|\b[A-Za-z_]\w*|\s+|.)/g)||[]).map(t=>{
+ let cls='';if(/^['"]/.test(t))cls='tok-str';else if(/^\d/.test(t))cls='tok-num';else if(keys.has(t))cls='tok-key';else if(['genai','os','userdata','google'].includes(t))cls='tok-module';else if(calls.has(t))cls='tok-call';else if(/^\w/.test(t))cls='tok-var';return cls?`<span class="${cls}">${esc(t)}</span>`:esc(t);
+ }).join('');
+}
+function editor(src){return `<div class="codewrap"><div class="codehead">${src.startsWith('pip ')?'Terminal':'Python · 範例程式碼'}</div><pre><code>${src.split('\n').map((x,i)=>`<span class="code-line"><span class="line-no">${i+1}</span>${syntax(x)}</span>`).join('')}</code></pre></div>`;}
+function detail(s,z){
+ const custom={
+ cover:['輸入是一段真實問題，還沒有送出。','Python 組成資料後呼叫 API。','雲端服務取得 request 才能開始處理。','程式從 response 讀取回覆，再呈現給使用者。'],
+ token:['模型先取得問題與目前上下文。','示意先產生「Python」。','加入「可以」，下一步仍依前文決定。','繼續生成，直到形成完整敘述。'],
+ key:['將金鑰放在分享的程式碼裡可能外洩。','使用環境變數可避免直接把 Key 寫進程式檔案。','前端 JavaScript 不能安全保存私密憑證。'],
+ roles:['System 指令用於設定基本行為。','User 是當次需要處理的任務。','Model 是模型生成的內容，不代表真實事實。'],
+ prompt:['只寫「介紹」沒有對象、範圍或輸出要求。','加入明確學習對象與任務方向。','再增加長度與格式，便於檢查是否完成。'],
+ history:['只有「再給一個例子」會缺少指涉。','保留與 list 相關的前文，追問才容易理解。','全部保留不一定比較好；無關內容增加資料量。'],
+ cost:['同時考慮每次送出的輸入與生成的輸出。','增加呼叫次數通常提高累積 Token 用量。','長對話若每次重送歷史，輸入用量可能增加。'],
+ errors:['確認認證設定與權限。','確認速率限制、配額與費用。','核對當前官方支援的模型 ID。','檢查連線並採適度重試。'],
+ privacy:['一般公開範例較適合直接測試。','不要把真實個資名單直接送出。','機密存取資料不可作為一般 Prompt。']
+ };
+ return custom[s.kind]?custom[s.kind][Math.min(z.mode,custom[s.kind].length-1)]:s.observe;
+}
+function aside(s,z){
+ if(s.kind==='quiz'){
+  const q=s.questions[z.question];
+  return `<div class="smallhead">快速檢核</div><div class="lead">${esc(s.lead)}</div>${z.correct?`<div class="quizexplain">${esc(q.why)}</div>`:z.wrong?`<div class="quizhint">提示：${esc(q.hint)}</div>`:`<p class="note">請直接點選左側答案，檢查是否理解。</p>`}<div class="think">${esc(s.think)}</div>`;
+ }
+ const code=codeFor(s,z);
+ return `<div class="smallhead">核心概念</div><div class="lead">${esc(s.lead)}</div><div class="smallhead">觀察重點</div><p class="note">${esc(detail(s,z))}</p>${code?editor(code):''}<div class="think">思考一下｜${esc(s.think)}</div>`;
+}
+function controls(s,z){
+ if(s.kind==='quiz')return `<button class="ctrlbtn" data-action="prevq" ${z.question===0?'disabled':''}>上一題</button><span class="question-count">${z.question+1} / 3</span><button class="ctrlbtn primary" data-action="nextq" ${z.question===2||!z.correct?'disabled':''}>下一題</button>`;
+ if(s.kind==='builder')return s.opts.map((a,i)=>`<button class="choicebtn ${z.chosen.includes(i)?'selected':''}" data-toggle="${i}">${z.chosen.includes(i)?'✓ ':'＋ '}${esc(a)}</button>`).join('')+'<button class="choicebtn resetbtn" data-action="reset">重設</button>';
+ return s.opts.map((a,i)=>`<button class="choicebtn ${z.mode===i?'selected':''}" data-mode="${i}">${esc(a)}</button>`).join('');
+}
+function avatar(){return `<svg class="avatar" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="22" fill="#e8ebff"/><path d="M8 44q4-14 14-14t14 14" fill="#5c74bb"/><ellipse cx="22" cy="20" rx="11" ry="13" fill="#f7c5a8"/><path d="M11 19q-3-16 11-15 13-1 12 16l-4-8-8-2-8 5z" fill="#495184"/><circle cx="18" cy="21" r="1.3" fill="#3e5578"/><circle cx="26" cy="21" r="1.3" fill="#3e5578"/><path d="M19 26q3 3 6 0" fill="none" stroke="#be7883" stroke-width="1.4" stroke-linecap="round"/></svg>`;}
+function render(){
+ const s=slides[page];
+ root.innerHTML=`<header class="slidehead"><div class="meta"><div class="brand">${avatar()}<span>課程系列｜Python 與資料分析</span><span class="subbrand">教學主題｜LLM API 運用實務</span></div><span class="chip">第 ${s.section} 節 ／ 3 節</span></div><div class="titleline"><h1>${esc(s.title)}</h1><span class="topicnum">${['LLM、Prompt 與 API','Python 串接 Gemini','多輪對話與使用責任'][s.section-1]} · ${String(page%10+1).padStart(2,'0')}</span></div></header><main class="content"><section class="mainpanel"><div class="panelhead"><span class="panellabel">${s.kind==='quiz'?'快速檢核｜3 題':'觀察與操作｜互動示範'}</span><span class="panelhint">${s.kind==='quiz'?'答錯只提示，答對才有解析':'左側操作為教學模擬；不會發出 API 呼叫'}</span></div><div id="viz"></div><div id="controls"></div></section><aside class="sidepanel kind-${s.kind}" id="aside"></aside></main><footer class="foot"><div class="footerMeta"><div class="footnotice">← / → 逐頁移動　·　G 投影片總覽　·　H 操作說明</div></div><div class="progress">${slides.map((slide,i)=>`<span class="pseg ${i<page?'done':i===page?'now':''}"></span>`).join('')}</div><div class="nav"><span class="numlabel">${page+1} / ${slides.length}</span><button data-nav="-1" ${page===0?'disabled':''}>上一頁</button><button class="next" data-nav="1" ${page===slides.length-1?'disabled':''}>下一頁</button></div></footer>`;
+ update(true);if(overlay)showOverlay();
+}
+function update(rebuild=false){const s=slides[page],z=current();document.getElementById('viz').innerHTML=visual(s,z);document.getElementById('aside').innerHTML=aside(s,z);if(rebuild)document.getElementById('controls').innerHTML=controls(s,z);}
+function go(n){page=Math.max(0,Math.min(slides.length-1,n));overlay='';render();}
+function showOverlay(){
+ const main=overlay==='overview'?`<h2>投影片總覽｜${slides.length} 張</h2><div class="overview">${slides.map((s,i)=>`<button data-goto="${i}" class="${i===page?'active':''}">${String(i+1).padStart(2,'0')}｜${esc(s.title)}</button>`).join('')}</div>`:`<h2>投影片操作說明</h2><div class="helptext">← / →：上一張與下一張投影片<br>G：投影片總覽　H：操作說明<br>F：全螢幕　Esc：關閉視窗<br><small>所有 AI 回覆、費率與失敗情境的互動圖都是「教學模擬」，沒有實際呼叫 Gemini API。右側 Python 需在已安裝 google-genai 且設定有效 Key 的連網環境執行。<br>官方參考：ai.google.dev/gemini-api/docs/get-started、api-key、models、pricing（2026 年 10 月確認）。</small></div>`;
+ root.insertAdjacentHTML('beforeend',`<div class="overveil"><div class="overlay"><button class="closeoverlay" data-action="close">關閉 ×</button>${main}</div></div>`);
+}
+root.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b||b.disabled)return;
+ if(b.hasAttribute('data-nav'))return go(page+Number(b.dataset.nav));
+ if(b.hasAttribute('data-goto'))return go(Number(b.dataset.goto));
+ const z=current();
+ if(b.hasAttribute('data-mode')){z.mode=Number(b.dataset.mode);return update(true);}
+ if(b.hasAttribute('data-toggle')){const n=Number(b.dataset.toggle);z.chosen=z.chosen.includes(n)?z.chosen.filter(x=>x!==n):[...z.chosen,n].sort();return update(true);}
+ if(b.hasAttribute('data-answer')){const n=Number(b.dataset.answer);z.answer=n;z.correct=slides[page].questions[z.question].ok===n;z.wrong=!z.correct;return update(true);}
+ if(b.dataset.action==='nextq'||b.dataset.action==='prevq'){z.question+=b.dataset.action==='nextq'?1:-1;z.answer=-1;z.correct=false;z.wrong=false;return update(true);}
+ if(b.dataset.action==='reset'){z.chosen=[];return update(true);}
+ if(b.dataset.action==='close'){overlay='';return render();}
+});
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&overlay){overlay='';render();return;}
+ if(overlay||/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement?.tagName||''))return;
+ if(['ArrowRight','PageDown'].includes(e.key)){e.preventDefault();go(page+1);}
+ else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(page-1);}
+ else if(e.key.toLowerCase()==='g'){overlay='overview';showOverlay();}
+ else if(e.key.toLowerCase()==='h'||e.key==='?'){overlay='help';showOverlay();}
+ else if(e.key.toLowerCase()==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();}
+});
+function resize(){const scale=Math.min(innerWidth/1280,innerHeight/720);root.style.transform=`scale(${scale})`;root.style.left=`${(innerWidth-1280*scale)/2}px`;root.style.top=`${(innerHeight-720*scale)/2}px`;}
+window.addEventListener('resize',resize);
+resize();render();
+</script></body></html>
